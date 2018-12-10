@@ -1,0 +1,76 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using PeterO.Cbor;
+using System.Runtime.Serialization;
+
+namespace WebAuthnModokiDesktop
+{
+    [DataContract]
+    public class CTAPResponse
+    {
+        private byte _status;
+        [DataMember()]
+        public byte Status
+        {
+            get {
+                return this._status;
+            }
+            set {
+                this._status = value;
+                this.StatusMsg = CTAPResponseStatusMessage.GetMessage(value);
+            }
+        }
+        [DataMember()]
+        public string StatusMsg { get; set; }
+        [DataMember()]
+        public string ResponseDataJson { get; set; }
+        [DataMember()]
+        public string CommandDataJson { get; set; }
+
+        public CTAPResponse()
+        {
+            Status = 0x00;
+            CommandDataJson = "";
+            ResponseDataJson = "";
+        }
+
+        public CTAPResponse(CTAPauthenticator.CTAPResponseInner resi)
+        {
+            Status = resi.Status;
+            if (resi.ResponseDataCbor == null) {
+                Console.WriteLine("ResponseDataCbor is null");        // log
+                //throw new Exception("ResponseDataCbor is null");
+                return;
+            }
+            ResponseDataJson = resi.ResponseDataCbor.ToJSONString();
+            Console.WriteLine(ResponseDataJson);        // log
+        }
+
+        protected bool getKeyValueAsBool(CBORObject obj, string key)
+        {
+            if (obj.ContainsKey(key)) {
+                return (obj[key].AsBoolean());
+            } else {
+                return false;
+            }
+        }
+
+        protected string[] getKeyValueAsStringArray(CBORObject obj)
+        {
+            var tmp = new List<string>();
+            obj.Values.ToList().ForEach(x => tmp.Add(x.AsString()));
+            return(tmp.ToArray());
+        }
+
+        protected int[] getKeyValueAsIntArray(CBORObject obj)
+        {
+            var tmp = new List<int>();
+            obj.Values.ToList().ForEach(x => tmp.Add(x.AsInt32()));
+            return (tmp.ToArray());
+        }
+
+    }
+}

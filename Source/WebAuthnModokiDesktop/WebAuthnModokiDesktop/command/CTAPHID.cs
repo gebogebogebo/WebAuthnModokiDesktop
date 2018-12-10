@@ -1,0 +1,206 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using HidLibrary;
+
+namespace u2fhost
+{
+	public class CTAPHID : IDisposable
+	{
+		private const byte CTAP_FRAME_INIT = 0x80;
+		private const int CTAP_RPT_SIZE = 64;
+		private const byte STAT_ERR = 0xbf;
+
+        // CTAP Command
+		private const byte CTAPHID_INIT = 0x06;
+        private const byte CTAPHID_CBOR = 0x10;
+        //This command code is used in response messages only.
+        private const byte CTAPHID_ERROR = 0x3F;
+        private const byte CTAPHID_KEEPALIVE = 0x3B;
+        //private const byte CTAPHID_KEEPALIVE_STATUS_PROCESSING = 1;     // The authenticator is still processing the current request.
+        //private const byte CTAPHID_KEEPALIVE_STATUS_UPNEEDED = 2;       // The authenticator is waiting for user presence.
+
+        private const uint BROADCAST_CID = 0xffffffff;
+
+		private const int HidTimeoutMs = 1000;
+
+		private readonly Random random = new Random();
+
+		private readonly IHidDevice hidDevice;
+		private byte[] cid;
+
+		protected CTAPHID(IHidDevice hidDevice)
+		{
+			this.hidDevice = hidDevice;
+			this.cid = BitConverter.GetBytes(BROADCAST_CID);
+		}
+
+		public static async Task<CTAPHID> OpenAsync(IHidDevice hidDevice)
+		{
+			var device = new CTAPHID(hidDevice);
+			await device.InitAsync();
+			return device;
+		}
+
+		protected async Task InitAsync()
+		{
+			var nonce = new byte[8];
+			random.NextBytes(nonce);
+			var response = await CallAsync(CTAPHID_INIT, nonce);
+
+			while (!response.Take(8).SequenceEqual(nonce))
+			{
+				await Task.Delay(100);
+				response = await CallAsync(CTAPHID_INIT, nonce);
+			}
+
+			this.cid = response.Skip(8).Take(4).ToArray();
+
+		}
+
+        public async Task<byte[]> CborAsync(byte[] command)
+        {
+            return await CallAsync(CTAPHID_CBOR, command);
+        }
+
+        private async Task<byte[]> CallAsync(byte command, byte[] data = null)
+		{
+			await SendCommandAsync(command, data);
+			return await ReceiveResponseAsync(command);
+		}
+
+		private async Task SendCommandAsync(byte command, byte[] data = null)
+		{
+			if (data == null)
+			{
+				data = new byte[0];
+			}
+
+			var reportSize = CTAP_RPT_SIZE;
+
+			var size = data.Length;
+			var bc_l = (byte)(size & 0xff);
+			var bc_h = (byte)(size >> 8 & 0xff);
+			var payloadData = data.Take(reportSize - 7).ToArray();
+
+            Console.WriteLine($"Payload data: {BitConverter.ToString(payloadData)}");
+
+            {
+                var packet = new List<byte>();
+                packet.AddRange(cid);
+                packet.Add((byte)(CTAP_FRAME_INIT | command));
+                packet.Add(bc_h);
+                packet.Add(bc_l);
+                packet.AddRange(payloadData);
+                while (packet.Count < reportSize) {
+                    packet.Add(0x00);
+                }
+                var report = hidDevice.CreateReport();
+                report.Data = packet.ToArray();
+                var sendst = await hidDevice.WriteReportAsync(report, HidTimeoutMs);
+                Console.WriteLine($"send Packet({sendst}): ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
+
+            }
+
+
+            var remainingData = data.Skip(reportSize - 7).ToArray();
+			var seq = 0;
+			while (remainingData.Length > 0)
+			{
+				payloadData = remainingData.Take(reportSize - 5).ToArray();
+
+                var packet = new List<byte>();
+                packet.AddRange(cid);
+                packet.Add((byte)(0x7f & seq));
+                packet.AddRange(payloadData);
+                while (packet.Count < reportSize) {
+                    packet.Add(0x00);
+                }
+                var report = hidDevice.CreateReport();
+                report.Data = packet.ToArray();
+
+				if (!await hidDevice.WriteReportAsync(report, HidTimeoutMs))
+				{
+					throw new Exception("Error writing to device");
+				}
+                Console.WriteLine($"send Packet: ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
+
+                remainingData = remainingData.Skip(reportSize - 5).ToArray();
+				seq++;
+			}
+		}
+
+		private async Task<byte[]> ReceiveResponseAsync(byte command)
+		{
+			var reportSize = CTAP_RPT_SIZE;
+
+            HidReport report = null;
+            var resp = Encoding.ASCII.GetBytes(".");
+
+            for (; ; ) {
+                report = await hidDevice.ReadReportAsync(HidTimeoutMs);
+
+                if (report.ReadStatus != HidDeviceData.ReadStatus.Success) {
+                    throw new Exception("Error reading from device");
+                }
+
+                Console.WriteLine($"recv Packet: ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
+
+                resp = report.Data;
+
+                // error check
+                if( resp[4] == (byte)(CTAP_FRAME_INIT | CTAPHID_ERROR)) {
+                    throw new Exception("Error in response header");
+                } else if(resp[4] == (byte)(CTAP_FRAME_INIT | CTAPHID_KEEPALIVE)) {
+                    Console.WriteLine("keep alive");
+                    System.Threading.Thread.Sleep(100);
+                    continue;
+                }
+
+                break;
+            }
+
+			var dataLength = (report.Data[5] << 8) + report.Data[6];
+            var payloadData = report.Data.Skip(7).Take(Math.Min(dataLength, reportSize)).ToList();
+
+            dataLength -= (int)payloadData.Count;
+
+			var seq = 0;
+			while (dataLength > 0)
+			{
+				report = await hidDevice.ReadReportAsync(HidTimeoutMs);
+
+				if (report.ReadStatus != HidDeviceData.ReadStatus.Success)
+				{
+					throw new Exception("Error reading from device");
+				}
+
+				if (!report.Data.Take(4).SequenceEqual(cid))
+				{
+					throw new Exception("Wrong CID from device");
+				}
+				if (report.Data[4] != (byte)(seq & 0x7f))
+				{
+					throw new Exception("Wrong SEQ from device");
+				}
+				seq++;
+				var packetData = report.Data.Skip(5).Take(Math.Min(dataLength, reportSize)).ToList();
+
+				dataLength -= packetData.Count;
+
+                payloadData.AddRange(packetData);
+			}
+
+			var result = payloadData.ToArray();
+
+			return result;
+		}
+
+		public void Dispose()
+		{
+			hidDevice.CloseDevice();
+		}
+	}
+}
