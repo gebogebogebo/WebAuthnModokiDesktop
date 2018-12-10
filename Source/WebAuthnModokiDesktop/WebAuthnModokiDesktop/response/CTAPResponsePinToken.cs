@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;       // dll
 
 namespace WebAuthnModokiDesktop
 {
-    public class CTAPResponsePinToken : CTAPResponse
+    internal class CTAPResponsePinToken : CTAPResponse
     {
         public byte[] PinTokenEnc { get; set; }
         public CTAPResponsePinToken(CTAPauthenticator.CTAPResponseInner resi) : base(resi)

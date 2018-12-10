@@ -7,7 +7,7 @@ using PeterO.Cbor;
 
 namespace WebAuthnModokiDesktop
 {
-    public class CTAPResponseInfo:CTAPResponse
+    internal class CTAPResponseInfo:CTAPResponse
     {
         public string[] Versions{ get; private set; }
         public string[] Extensions { get; private set; }

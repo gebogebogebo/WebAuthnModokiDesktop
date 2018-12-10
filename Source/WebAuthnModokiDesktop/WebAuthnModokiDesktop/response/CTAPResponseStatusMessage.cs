@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebAuthnModokiDesktop
 {
-    class CTAPResponseStatusMessage
+    internal class CTAPResponseStatusMessage
     {
         static public string GetMessage(byte status)
         {

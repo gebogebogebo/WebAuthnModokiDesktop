@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;       // dll
 
 namespace WebAuthnModokiDesktop
 {
-    public class CTAPauthenticatorClientPIN : CTAPauthenticator
+    internal class CTAPauthenticatorClientPIN : CTAPauthenticator
     {
         [DllImport("SharedSecret.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         static extern int CreateSharedSecret(string aG_x,string aG_y,StringBuilder bG_x, StringBuilder bG_y, StringBuilder sharedSecret);

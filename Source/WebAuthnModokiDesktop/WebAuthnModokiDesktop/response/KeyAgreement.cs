@@ -7,7 +7,7 @@ using PeterO.Cbor;
 
 namespace WebAuthnModokiDesktop
 {
-    public class KeyAgreement
+    internal class KeyAgreement
     {
         // (Authenticator public key in COSE_Key format. )
         public int Kty { get; private set; }

@@ -3,14 +3,38 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
-
-using WebAuthnModokiDesktop;
+using System.IO;
 
 namespace WebAuthnModokiDesktop
 {
     public class createcommoandstatus:commoandstatus
     {
         public CTAPResponseAttestation attestation;
+
+        public bool SerializeFile(string pathname)
+        {
+            try {
+                string path = Path.GetDirectoryName(pathname);
+
+                if (Directory.Exists(path) == false) {
+                    Directory.CreateDirectory(path);
+                }
+                WebAuthnModokiDesktop.JsonUtility.SerializeFile(this.attestation, pathname);
+            } catch (Exception ex) {
+                return false;
+            }
+            return true;
+        }
+        public static CTAPResponseAttestation DeserializeFile(string pathname)
+        {
+            CTAPResponseAttestation att;
+            try {
+                att = WebAuthnModokiDesktop.JsonUtility.DeserializeFile<WebAuthnModokiDesktop.CTAPResponseAttestation>(pathname);
+            } catch (Exception ex) {
+                return null;
+            }
+            return att;
+        }
     }
 
     public partial class credentials
@@ -18,7 +42,7 @@ namespace WebAuthnModokiDesktop
         public static async Task<createcommoandstatus> create(string json,string pin="")
         {
             try {
-                var publickey = JsonConvert.DeserializeObject<CreatePublicKey>(json);
+                var publickey = JsonConvert.DeserializeObject<PublicKeyforCreate>(json);
                 publickey.pin = pin;
                 return (await create(publickey));
             } catch (Exception ex) {
@@ -27,7 +51,7 @@ namespace WebAuthnModokiDesktop
                 return (status);
             }
         }
-        public static async Task<createcommoandstatus> create(CreatePublicKey publickey)
+        public static async Task<createcommoandstatus> create(PublicKeyforCreate publickey)
         {
             var status = new createcommoandstatus();
 
@@ -90,7 +114,6 @@ namespace WebAuthnModokiDesktop
             }
             return status;
         }
-
     }
 
     [DataContract]
@@ -102,7 +125,7 @@ namespace WebAuthnModokiDesktop
     };
 
     [DataContract]
-    public class CreatePublicKey
+    public class PublicKeyforCreate
     {
         public class Rp
         {
@@ -162,11 +185,8 @@ namespace WebAuthnModokiDesktop
 
         public string pin { get; set; }
 
-        public CreatePublicKey()
+        public PublicKeyforCreate()
         {
-            //rp = new Rp();
-            //user = new User();
-            //pubKeyCredParams = new List<PubKeyCredParams>();
             authenticatorSelection = new AuthenticatorSelection();
             attestation = "";
             timeout = 0;

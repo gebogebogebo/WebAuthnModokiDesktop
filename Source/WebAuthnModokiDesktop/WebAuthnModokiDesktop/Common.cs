@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 
 namespace WebAuthnModokiDesktop
 {
-    public class Common
+    internal class Common
     {
         // 16進数文字列 => Byte配列
         public static byte[] HexStringToBytes(string str)
@@ -183,7 +183,7 @@ namespace WebAuthnModokiDesktop
         }
     }
 
-    public static class JsonUtility
+    internal static class JsonUtility
     {
         /// 任意のオブジェクトを JSON メッセージへシリアライズします。
         /// </summary>

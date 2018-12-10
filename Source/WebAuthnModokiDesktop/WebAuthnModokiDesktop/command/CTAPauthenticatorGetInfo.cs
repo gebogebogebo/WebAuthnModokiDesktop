@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebAuthnModokiDesktop
 {
-    public class CTAPauthenticatorGetInfo : CTAPauthenticator
+    internal class CTAPauthenticatorGetInfo : CTAPauthenticator
     {
         public async Task<CTAPResponseInfo> SendAndResponse()
         {

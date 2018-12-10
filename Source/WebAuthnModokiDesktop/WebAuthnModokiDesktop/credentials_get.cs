@@ -22,7 +22,7 @@ namespace WebAuthnModokiDesktop
         public static async Task<getcommoandstatus> get(string json, string pin = "")
         {
             try {
-                var publickey = JsonConvert.DeserializeObject<GetPublicKey>(json);
+                var publickey = JsonConvert.DeserializeObject<PublicKeyforGet>(json);
                 publickey.pin = pin;
                 return (await get(publickey));
             } catch (Exception ex) {
@@ -31,17 +31,17 @@ namespace WebAuthnModokiDesktop
                 return (status);
             }
         }
-        public static async Task<getcommoandstatus> get(GetPublicKey publickey)
+        public static async Task<getcommoandstatus> get(PublicKeyforGet publickey)
         {
             var status = new getcommoandstatus();
 
             try {
 
-                string rpid = publickey.rp.id;
+                string rpid = publickey.rpId;
 
                 var ctap = new CTAPauthenticatorGetAssertion();
                 ctap.RpId = rpid;
-                ctap.ClientDataHash = CTAPauthenticator.CreateClientDataHash(publickey.publicKey.challenge);
+                ctap.ClientDataHash = CTAPauthenticator.CreateClientDataHash(publickey.challenge);
 
                 // credential-id
                 if( publickey.allowCredentials.Count > 0 &&
@@ -52,6 +52,12 @@ namespace WebAuthnModokiDesktop
                 }
 
                 ctap.Option_up = publickey.requireUserPresence;
+
+                if (publickey.userVerification == UserVerificationRequirement.discouraged) {
+                    ctap.Option_uv = false;
+                } else {
+                    ctap.Option_uv = true;
+                }
 
                 // pin
                 if (publickey.pin.Length > 0 ) {
@@ -107,20 +113,21 @@ namespace WebAuthnModokiDesktop
     }
 
     [DataContract]
-    public class GetPublicKey
+    public class PublicKeyforGet
     {
-        public class PublicKey
-        {
-            [DataMember]
-            public int timeout { get; set; }
-            [DataMember]
-            public byte[] challenge { get; set; }
-        };
+        [DataMember]
+        public int timeout { get; set; }
+        [DataMember]
+        public byte[] challenge { get; set; }
+        [DataMember]
+        public string rpId { get; set; }
+
         public class AllowCredentials
         {
             [DataMember]
             public byte[] id { get; set; }
         };
+
         public class Rp
         {
             [DataMember]
@@ -128,20 +135,15 @@ namespace WebAuthnModokiDesktop
         };
 
         [DataMember]
-        public PublicKey publicKey { get; set; }
-
-        [DataMember]
         public IList<AllowCredentials> allowCredentials { get; set; }
-
-        [DataMember]
-        public Rp rp { get; set; }
-
         [DataMember]
         public bool requireUserPresence { get; set; }
+        [DataMember]
+        public UserVerificationRequirement userVerification { get; set; }
 
         public string pin { get; set; }
 
-        public GetPublicKey()
+        public PublicKeyforGet()
         {
             pin = "";
         }

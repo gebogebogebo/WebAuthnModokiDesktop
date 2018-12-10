@@ -129,11 +129,7 @@ namespace testUI01
 
             // Export_File
             if (ret.isSuccess == true) {
-                if (Directory.Exists(".\\credentials") == false) {
-                    Directory.CreateDirectory(".\\credentials");
-                }
-                string file = string.Format($".\\credentials\\credential_{rpid}_attestation.json");
-                WebAuthnModokiDesktop.JsonUtility.SerializeFile(ret.attestation, file);
+                ret.SerializeFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
             }
 
             log("【MakeCredential - End】");
@@ -154,9 +150,7 @@ namespace testUI01
             // credential-id
             var credentialid = new byte[0];
             if ((bool)checkGetAssertionCredentialId.IsChecked) {
-                string file = string.Format($".\\credentials\\credential_{rpid}_attestation.json");
-                var att = WebAuthnModokiDesktop.JsonUtility.DeserializeFile<WebAuthnModokiDesktop.CTAPResponseAttestation>(file);
-                 
+                var att = WebAuthnModokiDesktop.createcommoandstatus.DeserializeFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
                 credentialid = att.CredentialId;
             }
 
@@ -165,23 +159,22 @@ namespace testUI01
                 requireUserPresence = "true";
             }
 
+            string userVerification = "discouraged";
+            if ((bool)checkGetAssertionUV.IsChecked == true) {
+                userVerification = "preferred";
+            }
+
             string json =
                "{" +
-                   @"publicKey : {" +
-                       string.Format($"timeout : 60000,") +
-                       string.Format($"challenge:[{string.Join(",", challenge)}],") +
-                   @"}," +
-
+                    string.Format($"timeout : 60000,") +
+                    string.Format($"challenge:[{string.Join(",", challenge)}],") +
+                    string.Format($"rpId : '{rpid}',") +
                    @"allowCredentials : [{" +
                        string.Format($"id : [{string.Join(",", credentialid)}],") +
-                       string.Format($"transports:['usb', 'nfc', 'ble'],") +
                        string.Format($"type : 'public-key',") +
                    @"}]," +
-
-                   @"rp : {" +
-                       string.Format($"id : '{rpid}',") +
-                   @"}," +
-                   string.Format($"requireUserPresence : '{requireUserPresence}'") +
+                   string.Format($"requireUserPresence : '{requireUserPresence}',") +
+                   string.Format($"userVerification : '{userVerification}',") +
                 "}";
 
             var ret = await WebAuthnModokiDesktop.credentials.get(json, pin);

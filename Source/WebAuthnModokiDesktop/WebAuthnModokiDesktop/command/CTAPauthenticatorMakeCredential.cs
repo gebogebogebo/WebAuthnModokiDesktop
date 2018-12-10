@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 namespace WebAuthnModokiDesktop
 {
     [DataContract]
-    public class CTAPauthenticatorMakeCredential : CTAPauthenticator
+    internal class CTAPauthenticatorMakeCredential : CTAPauthenticator
     {
         // input param
 

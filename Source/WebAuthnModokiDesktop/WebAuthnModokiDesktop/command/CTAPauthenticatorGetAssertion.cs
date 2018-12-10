@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace WebAuthnModokiDesktop
 {
-    public class CTAPauthenticatorGetAssertion : CTAPauthenticator
+    internal class CTAPauthenticatorGetAssertion : CTAPauthenticator
     {
         // input param
         [DataMember()]
