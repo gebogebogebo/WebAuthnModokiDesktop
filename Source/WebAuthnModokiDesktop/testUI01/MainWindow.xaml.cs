@@ -191,5 +191,21 @@ namespace testUI01
             setResponse(ret);
             log("◆◆◆【setpin - END】");
         }
+
+        private async void button5_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] challenge = System.Text.Encoding.ASCII.GetBytes("this is challenge");
+
+            string json =
+               "{" +
+                    string.Format($"timeout : 60000,") +
+                    string.Format($"challenge:[{string.Join(",", challenge)}],") +
+                    string.Format($"rpId : 'gebo1.com',") +
+                "}";
+
+            var ret = await WebAuthnModokiDesktop.credentials.get(json,"1234");
+
+            int a = 0;
+        }
     }
 }

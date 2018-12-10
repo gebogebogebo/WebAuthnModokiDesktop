@@ -13,7 +13,7 @@
         <Button x:Name="button2" Content="create" HorizontalAlignment="Left" Height="30" Margin="10,173,0,0" VerticalAlignment="Top" Width="184" Click="button2_Click" />
         <Button x:Name="button3" Content="authenticatorGetAssertion" HorizontalAlignment="Left" Height="30" Margin="10,280,0,0" VerticalAlignment="Top" Width="184" Click="button3_Click" />
         <Button x:Name="button4" Content="PIN-SetPIN" HorizontalAlignment="Left" Margin="10,411,0,0" VerticalAlignment="Top" Width="184" Height="36" Click="button4_Click" />
-        <Button x:Name="button5" Content="test" HorizontalAlignment="Left" Height="30" Margin="10,452,0,0" VerticalAlignment="Top" Width="184" />
+        <Button x:Name="button5" Content="test" HorizontalAlignment="Left" Height="30" Margin="10,452,0,0" VerticalAlignment="Top" Width="184" Click="button5_Click" />
         <TextBox x:Name="textBox_rpid" HorizontalAlignment="Left" Height="21" Margin="10,10,0,0" TextWrapping="Wrap" Text="gebo1.com" VerticalAlignment="Top" Width="184"/>
         <CheckBox x:Name="checkGetAssertionCredentialId" Content="getAssertion CredentialId" HorizontalAlignment="Left" Height="18" Margin="10,315,0,0" VerticalAlignment="Top" Width="155" IsChecked="True"/>
         <CheckBox x:Name="checkGetAssertionUP" Content="getAssertion up" HorizontalAlignment="Left" Height="18" Margin="10,333,0,0" VerticalAlignment="Top" Width="155" IsChecked="True"/>

@@ -44,7 +44,8 @@ namespace WebAuthnModokiDesktop
                 ctap.ClientDataHash = CTAPauthenticator.CreateClientDataHash(publickey.challenge);
 
                 // credential-id
-                if( publickey.allowCredentials.Count > 0 &&
+                if( publickey.allowCredentials != null &&
+                    publickey.allowCredentials.Count > 0 &&
                     publickey.allowCredentials[0] != null &&
                     publickey.allowCredentials[0].id != null &&
                     publickey.allowCredentials[0].id.Length > 0) {
