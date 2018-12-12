@@ -7,7 +7,7 @@ using System.IO;
 
 namespace WebAuthnModokiDesktop
 {
-    public class createcommoandstatus:commoandstatus
+    public class createcommandstatus:commandstatus
     {
         public CTAPResponseAttestation attestation;
 
@@ -39,21 +39,21 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<createcommoandstatus> create(string publickeyJson,string pin="")
+        public static async Task<createcommandstatus> create(string publickeyJson,string pin="")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforCreate>(publickeyJson);
                 publickey.pin = pin;
                 return (await create(publickey));
             } catch (Exception ex) {
-                var status = new createcommoandstatus();
+                var status = new createcommandstatus();
                 status.msg = ex.Message.ToString();
                 return (status);
             }
         }
-        public static async Task<createcommoandstatus> create(PublicKeyforCreate publickey)
+        public static async Task<createcommandstatus> create(PublicKeyforCreate publickey)
         {
-            var status = new createcommoandstatus();
+            var status = new createcommandstatus();
 
             try {
                 if( publickey.rp == null || publickey.user == null || publickey.challenge == null) {
@@ -82,7 +82,7 @@ namespace WebAuthnModokiDesktop
                     var ctap2 = new CTAPauthenticatorClientPIN();
 
                     var st1 = await ctap2.GetKeyAgreement();
-                    status.commands.Add(new commoandstatus.commandinfo(ctap2, st1));
+                    status.commands.Add(new commandstatus.commandinfo(ctap2, st1));
                     if (st1.Status != 0x00) {
                         return status;
                     }
@@ -92,7 +92,7 @@ namespace WebAuthnModokiDesktop
                     var pinHashEnc = ctap2.createPinHashEnc(pin, sharedSecret);
 
                     var token = await ctap2.GetPINToken(pinHashEnc);
-                    status.commands.Add(new commoandstatus.commandinfo(ctap2, token));
+                    status.commands.Add(new commandstatus.commandinfo(ctap2, token));
                     if (token.Status != 0x00) {
                         return status;
                     }
@@ -101,7 +101,7 @@ namespace WebAuthnModokiDesktop
                 }
 
                 var att = await ctap.SendAndResponse();
-                status.commands.Add(new commoandstatus.commandinfo(ctap, att));
+                status.commands.Add(new commandstatus.commandinfo(ctap, att));
                 if (att.Status != 0x00) {
                     return status;
                 }

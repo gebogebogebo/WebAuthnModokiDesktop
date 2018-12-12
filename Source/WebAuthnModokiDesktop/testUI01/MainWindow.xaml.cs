@@ -49,7 +49,7 @@ namespace testUI01
             }
         }
 
-        private void setResponse(WebAuthnModokiDesktop.commoandstatus res)
+        private void setResponse(WebAuthnModokiDesktop.commandstatus res)
         {
             string msg = "<commoandstatus>\r\n" + "isSuccess=" + res.isSuccess + " , " + "msg=" + res.msg + "\r\n";
             textBox.Text = textBox.Text + msg + "\r\n";
@@ -150,7 +150,7 @@ namespace testUI01
             // credential-id
             var credentialid = new byte[0];
             if ((bool)checkGetAssertionCredentialId.IsChecked) {
-                var att = WebAuthnModokiDesktop.createcommoandstatus.DeserializeFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                var att = WebAuthnModokiDesktop.createcommandstatus.DeserializeFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
                 credentialid = att.CredentialId;
             }
 

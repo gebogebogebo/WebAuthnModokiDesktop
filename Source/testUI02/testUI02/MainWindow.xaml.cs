@@ -4,14 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace testUI02
 {
@@ -25,9 +17,9 @@ namespace testUI02
             InitializeComponent();
         }
 
-        private void logResponse(WebAuthnModokiDesktop.commoandstatus res)
+        private void logResponse(WebAuthnModokiDesktop.commandstatus res)
         {
-            string msg = "<commoandstatus>\r\n" + "isSuccess=" + res.isSuccess + " , " + "msg=" + res.msg + "\r\n";
+            string msg = "<commandstatus>\r\n" + "isSuccess=" + res.isSuccess + " , " + "msg=" + res.msg + "\r\n";
             log(msg);
 
             foreach (var cmd in res.commands) {

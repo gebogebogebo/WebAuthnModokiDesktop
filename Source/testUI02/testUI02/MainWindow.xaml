@@ -37,7 +37,7 @@
                 <Button x:Name="buttonLogin2" Content="Next" HorizontalAlignment="Left" Height="27" Margin="98,111,0,0" VerticalAlignment="Top" Width="120" Click="buttonLogin2_Click" />
             </Grid>
         </GroupBox>
-        <Grid HorizontalAlignment="Left" Height="214" Margin="10,266,0,0" VerticalAlignment="Top" Width="730">
+        <Grid Margin="10,266,0,0">
             <TextBox x:Name="textLog" TextWrapping="Wrap" Text="Log"/>
         </Grid>
         <Label x:Name="label4" Content="PIN" HorizontalAlignment="Left" Margin="620,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.57,1.179"/>

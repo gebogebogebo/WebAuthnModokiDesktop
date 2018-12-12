@@ -4,14 +4,12 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-using WebAuthnModokiDesktop;
-
 namespace WebAuthnModokiDesktop
 {
-    public class getcommoandstatus : commoandstatus
+    public class getcommandstatus : commandstatus
     {
         public List<CTAPResponseAssertion> assertions;
-        public getcommoandstatus() : base()
+        public getcommandstatus() : base()
         {
             assertions = new List<CTAPResponseAssertion>();
         }
@@ -19,21 +17,22 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<getcommoandstatus> get(string publickeyJson, string pin = "")
+        public static async Task<getcommandstatus> get(string publickeyJson, string pin = "")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforGet>(publickeyJson);
                 publickey.pin = pin;
                 return (await get(publickey));
             } catch (Exception ex) {
-                var status = new getcommoandstatus();
+                var status = new getcommandstatus();
                 status.msg = ex.Message.ToString();
                 return (status);
             }
         }
-        public static async Task<getcommoandstatus> get(PublicKeyforGet publickey)
+
+        public static async Task<getcommandstatus> get(PublicKeyforGet publickey)
         {
-            var status = new getcommoandstatus();
+            var status = new getcommandstatus();
 
             try {
 
@@ -67,7 +66,7 @@ namespace WebAuthnModokiDesktop
                     var ctap2 = new CTAPauthenticatorClientPIN();
 
                     var st1 = await ctap2.GetKeyAgreement();
-                    status.commands.Add(new commoandstatus.commandinfo(ctap2, st1));
+                    status.commands.Add(new commandstatus.commandinfo(ctap2, st1));
                     if (st1.Status != 0x00) {
                         return status;
                     }
@@ -77,7 +76,7 @@ namespace WebAuthnModokiDesktop
                     var pinHashEnc = ctap2.createPinHashEnc(pin, sharedSecret);
 
                     var token = await ctap2.GetPINToken(pinHashEnc);
-                    status.commands.Add(new commoandstatus.commandinfo(ctap2, token));
+                    status.commands.Add(new commandstatus.commandinfo(ctap2, token));
                     if (token.Status != 0x00) {
                         return status;
                     }
@@ -86,7 +85,7 @@ namespace WebAuthnModokiDesktop
                 }
 
                 var ret = await ctap.SendAndResponse();
-                status.commands.Add(new commoandstatus.commandinfo(ctap, ret));
+                status.commands.Add(new commandstatus.commandinfo(ctap, ret));
                 if (ret.Status != 0x00) {
                     return status;
                 }
@@ -96,7 +95,7 @@ namespace WebAuthnModokiDesktop
                     for (int intIc = 0; intIc < ret.NumberOfCredentials - 1; intIc++) {
                         var next = new CTAPauthenticatorGetNextAssertion();
                         var nextret = await next.SendAndResponse();
-                        status.commands.Add(new commoandstatus.commandinfo(next, nextret));
+                        status.commands.Add(new commandstatus.commandinfo(next, nextret));
                         if (ret.Status != 0x00) {
                             return status;
                         }

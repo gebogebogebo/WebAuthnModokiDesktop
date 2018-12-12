@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using HidLibrary;
-
-using WebAuthnModokiDesktop;
 
 namespace WebAuthnModokiDesktop
 {
-    public class commoandstatus
+    public class commandstatus
     {
         public class commandinfo
         {
@@ -27,7 +24,7 @@ namespace WebAuthnModokiDesktop
         public bool isSuccess;
         public string msg;
 
-        public commoandstatus()
+        public commandstatus()
         {
             commands = new List<commandinfo>();
             isSuccess = false;
@@ -43,9 +40,9 @@ namespace WebAuthnModokiDesktop
             return false;
         }
 
-        public static commoandstatus hidcheck()
+        public static commandstatus hidcheck()
         {
-            var status = new commoandstatus();
+            var status = new commandstatus();
             try {
                 var yubikey = HidDevices.Enumerate(CTAPauthenticator.VENDOR_ID, CTAPauthenticator.PRODUCT_ID).FirstOrDefault();
                 if (yubikey == null) {
@@ -68,13 +65,13 @@ namespace WebAuthnModokiDesktop
             return status;
         }
 
-        public static async Task<commoandstatus> setpin(string newpin)
+        public static async Task<commandstatus> setpin(string newpin)
         {
-            var status = new commoandstatus();
+            var status = new commandstatus();
 
             var ctap = new CTAPauthenticatorClientPIN();
             var st = await ctap.GetKeyAgreement();
-            status.commands.Add(new commoandstatus.commandinfo(ctap, st));
+            status.commands.Add(new commandstatus.commandinfo(ctap, st));
             if (st.Status != 0x00) {
                 return status;
             }
@@ -99,7 +96,7 @@ namespace WebAuthnModokiDesktop
             byte[] newPinEnc = ctap.createNewPinEnc(sharedSecret, bpin64);
 
             var st2 = await ctap.SetPIN(pinAuth, newPinEnc);
-            status.commands.Add(new commoandstatus.commandinfo(ctap, st2));
+            status.commands.Add(new commandstatus.commandinfo(ctap, st2));
             if (st2.Status != 0x00) {
                 return status;
             }
@@ -108,13 +105,13 @@ namespace WebAuthnModokiDesktop
             return status;
         }
 
-        public static async Task<commoandstatus> info()
+        public static async Task<commandstatus> info()
         {
-            var status = new commoandstatus();
+            var status = new commandstatus();
 
             var ctap = new CTAPauthenticatorGetInfo();
             var ret = await ctap.SendAndResponse();
-            status.commands.Add(new commoandstatus.commandinfo(ctap, ret));
+            status.commands.Add(new commandstatus.commandinfo(ctap, ret));
             if (ret.Status != 0x00) {
                 return status;
             }
