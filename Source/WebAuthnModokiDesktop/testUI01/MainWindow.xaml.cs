@@ -67,7 +67,7 @@ namespace testUI01
         private void button_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【test - Start】");
-            var ret = WebAuthnModokiDesktop.credentials.test();
+            var ret = WebAuthnModokiDesktop.credentials.hidcheck();
             setResponse(ret);
             log("◆◆◆【test - END】");
         }

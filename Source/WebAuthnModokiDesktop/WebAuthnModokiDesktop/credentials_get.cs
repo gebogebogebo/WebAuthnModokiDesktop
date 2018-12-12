@@ -19,10 +19,10 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<getcommoandstatus> get(string json, string pin = "")
+        public static async Task<getcommoandstatus> get(string publickeyJson, string pin = "")
         {
             try {
-                var publickey = JsonConvert.DeserializeObject<PublicKeyforGet>(json);
+                var publickey = JsonConvert.DeserializeObject<PublicKeyforGet>(publickeyJson);
                 publickey.pin = pin;
                 return (await get(publickey));
             } catch (Exception ex) {

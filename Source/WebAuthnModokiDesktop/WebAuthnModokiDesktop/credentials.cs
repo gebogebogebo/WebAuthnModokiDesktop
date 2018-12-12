@@ -43,7 +43,7 @@ namespace WebAuthnModokiDesktop
             return false;
         }
 
-        public static commoandstatus test()
+        public static commoandstatus hidcheck()
         {
             var status = new commoandstatus();
             try {
