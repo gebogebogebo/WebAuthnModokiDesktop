@@ -70,12 +70,18 @@ namespace testUI02
             log("<Info>");
             var response = await WebAuthnModokiDesktop.credentials.info();
             logResponse(response);
+            if( response.isSuccess == true) {
+                MessageBox.Show("Success!");
+            } else {
+                MessageBox.Show("Failed!");
+            }
             log("<Info-End>");
         }
 
         byte[] CredentialId = null;
         private async void buttonRegister_Click(object sender, RoutedEventArgs e)
         {
+            labelRegisterResult.Content = "";
             log("");
             log("<Register>");
 
@@ -111,10 +117,12 @@ namespace testUI02
                 log("Registration successful!");
                 log("---");
                 textLoginUserName.Text = user;
+                labelRegisterResult.Content = "successful!";
             } else {
                 log("---");
                 log("Registration failed!");
                 log("---");
+                labelRegisterResult.Content = "failed!";
             }
 
             logResponse(response);
@@ -127,6 +135,7 @@ namespace testUI02
 
         private async void buttonLogin_Click(object sender, RoutedEventArgs e)
         {
+            labeLoginResult.Content = "";
             log("");
             log("<Login>");
 
@@ -158,10 +167,12 @@ namespace testUI02
                 log("---");
                 log("Authentication successful!");
                 log("---");
+                labeLoginResult.Content = "successful!";
             } else {
                 log("---");
                 log("Authentication failed!");
                 log("---");
+                labeLoginResult.Content = "failed!";
             }
 
             logResponse(response);
@@ -171,6 +182,7 @@ namespace testUI02
 
         private async void buttonLogin2_Click(object sender, RoutedEventArgs e)
         {
+            labeLogin2Result.Content = "";
             log("");
             log("<Login without username>");
 
@@ -193,10 +205,12 @@ namespace testUI02
                 log("---");
                 log("Authentication successful!");
                 log("---");
+                labeLogin2Result.Content = "successful!";
             } else {
                 log("---");
                 log("Authentication failed!");
                 log("---");
+                labeLogin2Result.Content = "failed!";
             }
 
             logResponse(response);

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:testUI02"
         mc:Ignorable="d"
-        Title="TRY WEBAUTHN MODOKI" Height="519.333" Width="760.667">
+        Title="TRY WEBAUTHN MODOKI" Height="519.333" Width="760.667" WindowStartupLocation="CenterScreen">
     <Grid>
         <TextBox x:Name="textPIN" HorizontalAlignment="Left" Height="20" Margin="654,29,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="86" RenderTransformOrigin="0.531,0.25"/>
 
@@ -18,28 +18,23 @@
                 <Label x:Name="label1" Content="Register using WebAuthn MODOKI" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" FontWeight="Bold"/>
                 <TextBox x:Name="textRegisterUserName" HorizontalAlignment="Left" Height="20" Margin="21,41,0,0" TextWrapping="Wrap" Text="UserName" VerticalAlignment="Top" Width="120"/>
                 <Button x:Name="buttonRegister" Content="Next" HorizontalAlignment="Left" Height="27" Margin="98,110,0,0" VerticalAlignment="Top" Width="120" Click="buttonRegister_Click"/>
-                <CheckBox x:Name="checkRegisterRk" Content="Enable username-less login" HorizontalAlignment="Left" Margin="21,76,0,0" VerticalAlignment="Top"/>
+                <CheckBox x:Name="checkRegisterRk" Content="Enable username-less login" HorizontalAlignment="Left" Margin="21,71,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="labelRegisterResult" Content="-" HorizontalAlignment="Left" Margin="21,86,0,0" VerticalAlignment="Top"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="groupBox1" Header="Login" HorizontalAlignment="Left" Height="170" Margin="255,81,0,0" VerticalAlignment="Top" Width="240">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="52*"/>
-                </Grid.ColumnDefinitions>
                 <Label x:Name="label2" Content="Log in using WebAuthn MODOKI" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Grid.ColumnSpan="2"/>
-                <TextBox x:Name="textLoginUserName" HorizontalAlignment="Left" Height="23" Margin="11.667,47,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="1" IsEnabled="False"/>
-                <Button x:Name="buttonLogin" Content="Next" HorizontalAlignment="Left" Height="27" Margin="78,110,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1" Click="buttonLogin_Click" />
+                <TextBox x:Name="textLoginUserName" HorizontalAlignment="Left" Height="23" Margin="21,47,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                <Button x:Name="buttonLogin" Content="Next" HorizontalAlignment="Left" Height="27" Margin="98,111,0,0" VerticalAlignment="Top" Width="120" Click="buttonLogin_Click" />
+                <Label x:Name="labeLoginResult" Content="-" HorizontalAlignment="Left" Margin="21,75,0,0" VerticalAlignment="Top"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="groupBox2" Header="Login without username" HorizontalAlignment="Left" Height="170" Margin="500,81,0,0" VerticalAlignment="Top" Width="240">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="14*"/>
-                    <ColumnDefinition Width="43*"/>
-                </Grid.ColumnDefinitions>
                 <Label x:Name="label3" Content="Log in using WebAuthn MODOKI" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Grid.ColumnSpan="2"/>
-                <Button x:Name="buttonLogin2" Content="Next" HorizontalAlignment="Left" Height="27" Margin="42.333,110,0,0" VerticalAlignment="Top" Width="120" Click="buttonLogin2_Click" Grid.Column="1" />
+                <Label x:Name="labeLogin2Result" Content="-" HorizontalAlignment="Left" Margin="21,75,0,0" VerticalAlignment="Top"/>
+                <Button x:Name="buttonLogin2" Content="Next" HorizontalAlignment="Left" Height="27" Margin="98,111,0,0" VerticalAlignment="Top" Width="120" Click="buttonLogin2_Click" />
             </Grid>
         </GroupBox>
         <Grid HorizontalAlignment="Left" Height="214" Margin="10,266,0,0" VerticalAlignment="Top" Width="730">
