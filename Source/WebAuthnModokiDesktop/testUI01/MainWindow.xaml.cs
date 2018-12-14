@@ -129,7 +129,7 @@ namespace testUI01
 
             // Export_File
             if (ret.isSuccess == true) {
-                ret.SerializeFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                WebAuthnModokiDesktop.credentials.serializeAttestationToFile(ret.attestation,string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
             }
 
             log("【MakeCredential - End】");
@@ -150,7 +150,7 @@ namespace testUI01
             // credential-id
             var credentialid = new byte[0];
             if ((bool)checkGetAssertionCredentialId.IsChecked) {
-                var att = WebAuthnModokiDesktop.createcommandstatus.DeserializeFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                var att = WebAuthnModokiDesktop.credentials.deSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
                 credentialid = att.CredentialId;
             }
 

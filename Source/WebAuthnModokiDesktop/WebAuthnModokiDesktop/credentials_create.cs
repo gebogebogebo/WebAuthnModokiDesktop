@@ -10,31 +10,6 @@ namespace WebAuthnModokiDesktop
     public class createcommandstatus:commandstatus
     {
         public CTAPResponseAttestation attestation;
-
-        public bool SerializeFile(string pathname)
-        {
-            try {
-                string path = Path.GetDirectoryName(pathname);
-
-                if (Directory.Exists(path) == false) {
-                    Directory.CreateDirectory(path);
-                }
-                WebAuthnModokiDesktop.JsonUtility.SerializeFile(this.attestation, pathname);
-            } catch (Exception ex) {
-                return false;
-            }
-            return true;
-        }
-        public static CTAPResponseAttestation DeserializeFile(string pathname)
-        {
-            CTAPResponseAttestation att;
-            try {
-                att = WebAuthnModokiDesktop.JsonUtility.DeserializeFile<WebAuthnModokiDesktop.CTAPResponseAttestation>(pathname);
-            } catch (Exception ex) {
-                return null;
-            }
-            return att;
-        }
     }
 
     public partial class credentials
@@ -114,6 +89,32 @@ namespace WebAuthnModokiDesktop
             }
             return status;
         }
+
+        public static bool serializeAttestationToFile(CTAPResponseAttestation att,string pathname)
+        {
+            try {
+                string path = Path.GetDirectoryName(pathname);
+
+                if (Directory.Exists(path) == false) {
+                    Directory.CreateDirectory(path);
+                }
+                WebAuthnModokiDesktop.JsonUtility.SerializeFile(att, pathname);
+            } catch (Exception ex) {
+                return false;
+            }
+            return true;
+        }
+        public static CTAPResponseAttestation deSerializeAttestationFromFile(string pathname)
+        {
+            CTAPResponseAttestation att;
+            try {
+                att = WebAuthnModokiDesktop.JsonUtility.DeserializeFile<WebAuthnModokiDesktop.CTAPResponseAttestation>(pathname);
+            } catch (Exception ex) {
+                return null;
+            }
+            return att;
+        }
+
     }
 
     [DataContract]
