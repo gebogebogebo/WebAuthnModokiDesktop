@@ -67,6 +67,7 @@
     <Compile Include="command\CTAPauthenticatorGetNextAssertion.cs" />
     <Compile Include="command\CTAPauthenticatorMakeCredential.cs" />
     <Compile Include="command\CTAPHID.cs" />
+    <Compile Include="credentials_info.cs" />
     <Compile Include="response\CTAPResponse.cs" />
     <Compile Include="response\CTAPResponseAssertion.cs" />
     <Compile Include="response\CTAPResponseAttestation.cs" />

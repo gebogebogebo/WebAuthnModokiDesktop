@@ -30,6 +30,19 @@ namespace WebAuthnModokiDesktop
             isSuccess = false;
             msg = "";
         }
+
+        public void setErrorMsg(Exception ex)
+        {
+            this.isSuccess = false;
+            if (string.IsNullOrEmpty(this.msg)) {
+                this.msg = ex.Message;
+                if (this.commands.Count > 0) {
+                    if (this.commands[this.commands.Count - 1].res != null) {
+                        this.msg = this.msg + this.commands[this.commands.Count - 1].res.StatusMsg;
+                    }
+                }
+            }
+        }
     }
 
     public partial class credentials
@@ -68,54 +81,71 @@ namespace WebAuthnModokiDesktop
         public static async Task<commandstatus> setpin(string newpin)
         {
             var status = new commandstatus();
-
-            var ctap = new CTAPauthenticatorClientPIN();
-            var st = await ctap.GetKeyAgreement();
-            status.commands.Add(new commandstatus.commandinfo(ctap, st));
-            if (st.Status != 0x00) {
-                return status;
-            }
-
-            var sharedSecret = ctap.createSharedSecret(ctap.Authenticator_KeyAgreement);
-
-            // pinAuth = LEFT(HMAC-SHA-256(sharedSecret, newPinEnc), 16)
-            var bpin64 = new byte[64];
-            {
-                byte[] pintmp = Encoding.ASCII.GetBytes(newpin);
-                for (int intIc = 0; intIc < bpin64.Length; intIc++) {
-                    if (intIc < pintmp.Length) {
-                        bpin64[intIc] = pintmp[intIc];
-                    } else {
-                        bpin64[intIc] = 0x00;
-                    }
+            try {
+                var ctap = new CTAPauthenticatorClientPIN();
+                var st = await ctap.GetKeyAgreement();
+                status.commands.Add(new commandstatus.commandinfo(ctap, st));
+                if (st.Status != 0x00) {
+                    throw (new Exception("GetKeyAgreement"));
                 }
+
+                var sharedSecret = ctap.createSharedSecret(ctap.Authenticator_KeyAgreement);
+
+                // pinAuth = LEFT(HMAC-SHA-256(sharedSecret, newPinEnc), 16)
+                var pinAuth = ctap.createPinAuthforSetPin(sharedSecret, newpin);
+
+                // newPinEnc: AES256-CBC(sharedSecret, IV = 0, newPin)
+                byte[] newPinEnc = ctap.createNewPinEnc(sharedSecret, newpin);
+
+                var st2 = await ctap.SetPIN(pinAuth, newPinEnc);
+                status.commands.Add(new commandstatus.commandinfo(ctap, st2));
+                if (st2.Status != 0x00) {
+                    throw (new Exception("SetPIN"));
+                }
+
+                status.isSuccess = true;
+            } catch (Exception ex) {
+                status.setErrorMsg(ex);
             }
-            var pinAuth = ctap.createPinAuthforSetPin(sharedSecret, bpin64);
-
-            // newPinEnc: AES256-CBC(sharedSecret, IV = 0, newPin)
-            byte[] newPinEnc = ctap.createNewPinEnc(sharedSecret, bpin64);
-
-            var st2 = await ctap.SetPIN(pinAuth, newPinEnc);
-            status.commands.Add(new commandstatus.commandinfo(ctap, st2));
-            if (st2.Status != 0x00) {
-                return status;
-            }
-
-            status.isSuccess = true;
             return status;
         }
 
-        public static async Task<commandstatus> info()
+        public static async Task<commandstatus> changepin(string newpin, string currentpin)
         {
             var status = new commandstatus();
 
-            var ctap = new CTAPauthenticatorGetInfo();
-            var ret = await ctap.SendAndResponse();
-            status.commands.Add(new commandstatus.commandinfo(ctap, ret));
-            if (ret.Status != 0x00) {
-                return status;
+            try {
+                var ctap = new CTAPauthenticatorClientPIN();
+                var st = await ctap.GetKeyAgreement();
+                status.commands.Add(new commandstatus.commandinfo(ctap, st));
+                if (st.Status != 0x00) {
+                    throw (new Exception("GetKeyAgreement"));
+                }
+
+                var sharedSecret = ctap.createSharedSecret(ctap.Authenticator_KeyAgreement);
+
+                // pinAuth:
+                //  LEFT(HMAC-SHA-256(sharedSecret, newPinEnc || pinHashEnc), 16).
+                var pinAuth = ctap.createPinAuthforChangePin(sharedSecret, newpin,currentpin);
+
+                // newPinEnc: AES256-CBC(sharedSecret, IV = 0, newPin)
+                byte[] newPinEnc = ctap.createNewPinEnc(sharedSecret, newpin);
+
+                // pinHashEnc:
+                //  Encrypted first 16 bytes of SHA - 256 hash of curPin using sharedSecret: 
+                //  AES256-CBC(sharedSecret, IV = 0, LEFT(SHA-256(curPin), 16)).
+                var pinHashEnc = ctap.createPinHashEnc(currentpin, sharedSecret);
+
+                var st2 = await ctap.ChangePIN(pinAuth, newPinEnc, pinHashEnc);
+                status.commands.Add(new commandstatus.commandinfo(ctap, st2));
+                if (st2.Status != 0x00) {
+                    throw (new Exception("ChangePIN"));
+                }
+
+                status.isSuccess = true;
+            } catch (Exception ex) {
+                status.setErrorMsg(ex);
             }
-            status.isSuccess = true;
             return status;
         }
 

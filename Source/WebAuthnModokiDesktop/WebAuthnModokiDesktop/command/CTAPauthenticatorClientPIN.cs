@@ -19,6 +19,7 @@ namespace WebAuthnModokiDesktop
         [DllImport("SharedSecret.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         static extern int Aes256cbc_Dec(string key, string inbuf, StringBuilder outbuf);
 
+        public int RetryCount { get; private set; }
         public async Task<CTAPResponse> GetRetries()
         {
             var response = new CTAPResponse();
@@ -36,6 +37,14 @@ namespace WebAuthnModokiDesktop
             var resi = await sendCommandandResponse(send);
 
             if (resi.ResponseDataCbor != null) {
+                foreach (var key in resi.ResponseDataCbor.Keys) {
+                    var keyVal = key.AsByte();
+                    if (keyVal == 0x03) {
+                        RetryCount = resi.ResponseDataCbor[key].AsUInt16();
+                        break;
+                    }
+                }
+
                 var json = resi.ResponseDataCbor.ToJSONString();
                 Console.WriteLine(json);
                 response.ResponseDataJson = json;
@@ -46,8 +55,8 @@ namespace WebAuthnModokiDesktop
             return (response);
         }
 
-        public KeyAgreement Authenticator_KeyAgreement { get; set; }
-        public KeyAgreement My_KeyAgreement { get; set; }
+        public KeyAgreement Authenticator_KeyAgreement { get; private set; }
+        public KeyAgreement My_KeyAgreement { get; private set; }
 
         public async Task<CTAPResponse> GetKeyAgreement()
         {
@@ -106,6 +115,44 @@ namespace WebAuthnModokiDesktop
             cbor.Add(0x05, newPinEnc);
 
             var resi = await sendCommandandResponse(0x06,cbor);
+
+            var response = new CTAPResponse(resi);
+
+            return (response);
+        }
+
+        public async Task<CTAPResponse> ChangePIN(byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
+        {
+            var cbor = CBORObject.NewMap();
+
+            // 0x01:pinProtocol = 1固定
+            cbor.Add(0x01, 1);
+
+            // 0x02:subCommand = 0x04:changePIN
+            cbor.Add(0x02, 0x04);
+
+            // 0x03:keyAgreement : COSE_Key
+            // これは、自分が生成したもの
+            {
+                var user = CBORObject.NewMap();
+                user.Add(1, My_KeyAgreement.Kty);
+                user.Add(3, My_KeyAgreement.Alg);
+                user.Add(-1, My_KeyAgreement.Crv);
+                user.Add(-2, My_KeyAgreement.X);
+                user.Add(-3, My_KeyAgreement.Y);
+                cbor.Add(0x03, user);
+            }
+
+            // 0x04:pinAuth
+            cbor.Add(0x04, pinAuth);
+
+            // 0x05:newPinEnc
+            cbor.Add(0x05, newPinEnc);
+
+            // 0x06:pinHashEnc
+            cbor.Add(0x06, pinHashEnc);
+
+            var resi = await sendCommandandResponse(0x06, cbor);
 
             var response = new CTAPResponse(resi);
 
@@ -203,6 +250,10 @@ namespace WebAuthnModokiDesktop
 
             return (newPinEnc);
         }
+        public byte[] createNewPinEnc(byte[] sharedSecret, string newpin)
+        {
+            return (createNewPinEnc(sharedSecret, paddingPin64(newpin)));
+        }
 
         public byte[] createPinAuth(byte[] sharedSecret,byte[] cdh,byte[] pinTokenEnc)
         {
@@ -225,8 +276,10 @@ namespace WebAuthnModokiDesktop
             return (pinAuth);
         }
 
-        public byte[] createPinAuthforSetPin(byte[] sharedSecret, byte[] newpin64)
+        public byte[] createPinAuthforSetPin(byte[] sharedSecret, string newpin)
         {
+            var newpin64 = this.paddingPin64(newpin);
+
             var strSharedSecret = Common.BytesToHexString(sharedSecret);
 
             var strNewPin64 = Common.BytesToHexString(newpin64);
@@ -247,5 +300,59 @@ namespace WebAuthnModokiDesktop
             return (pinAuth);
         }
 
+        public byte[] createPinAuthforChangePin(byte[] sharedSecret, string newpin,string currentpin)
+        {
+            // new pin
+            byte[] newPinEnc = null;
+            {
+                var newpin64 = this.paddingPin64(newpin);
+                var strSharedSecret = Common.BytesToHexString(sharedSecret);
+
+                var strNewPin64 = Common.BytesToHexString(newpin64);
+                var strNewPin64Enc = new StringBuilder(256);
+                int ret = Aes256cbc_Enc(strSharedSecret, strNewPin64, strNewPin64Enc);
+                if (ret < 0) {
+                    // Error
+                    return null;
+                }
+                newPinEnc = Common.HexStringToBytes(strNewPin64Enc.ToString());
+            }
+
+            // current pin
+            var currentPinHashEnc = createPinHashEnc(currentpin, sharedSecret);
+
+            // source data
+            var data = new List<byte>();
+            data.AddRange(newPinEnc.ToArray());
+            data.AddRange(currentPinHashEnc.ToArray());
+
+            // HMAC-SHA-256(sharedSecret, newPinEnc)
+            byte[] pinAuth;
+            using (var hmacsha256 = new HMACSHA256(sharedSecret)) {
+                var dgst = hmacsha256.ComputeHash(data.ToArray());
+                pinAuth = dgst.ToList().Take(16).ToArray();
+            }
+            return (pinAuth);
+        }
+
+        public byte[] paddingPin64(string pin)
+        {
+            // 5.5.5. Setting a New PIN
+            // 5.5.6. Changing existing PIN
+            // During encryption, 
+            // newPin is padded with trailing 0x00 bytes and is of minimum 64 bytes length. 
+            // This is to prevent leak of PIN length while communicating to the authenticator. 
+            // There is no PKCS #7 padding used in this scheme.
+            var bpin64 = new byte[64];
+            byte[] pintmp = Encoding.ASCII.GetBytes(pin);
+            for (int intIc = 0; intIc < bpin64.Length; intIc++) {
+                if (intIc < pintmp.Length) {
+                    bpin64[intIc] = pintmp[intIc];
+                } else {
+                    bpin64[intIc] = 0x00;
+                }
+            }
+            return (bpin64);
+        }
     }
 }
