@@ -24,7 +24,24 @@ namespace WebAuthnModokiDesktop
                 case 0x11: msg = "0x11 CTAP2_ERR_CBOR_UNEXPECTED_TYPE Invalid/ unexpected CBOR error."; break;
                 case 0x12: msg = "0x12 CTAP2_ERR_INVALID_CBOR Error when parsing CBOR."; break;
                 case 0x14: msg = "0x14 CTAP2_ERR_MISSING_PARAMETER Missing non - optional parameter."; break;
-                case 0x22: msg = "0x22 CTAP2_ERR_INVALID_CREDENTIAL    Credential not valid for the authenticator."; break;
+                case 0x15: msg = "0x15 CTAP2_ERR_LIMIT_EXCEEDED Limit for number of items exceeded."; break;
+                case 0x16: msg = "0x16 CTAP2_ERR_UNSUPPORTED_EXTENSION Unsupported extension."; break;
+                case 0x19: msg = "0x19 CTAP2_ERR_CREDENTIAL_EXCLUDED   Valid credential found in the exclude list."; break;
+                case 0x21: msg = "0x21 CTAP2_ERR_PROCESSING    Processing(Lengthy operation is in progress)."; break;
+                case 0x22: msg = "0x22 CTAP2_ERR_INVALID_CREDENTIAL    Credential not valid for the authenticator.";break;
+                case 0x23: msg = "0x23 CTAP2_ERR_USER_ACTION_PENDING   Authentication is waiting for user interaction."; break;
+                case 0x24: msg = "0x24 CTAP2_ERR_OPERATION_PENDING Processing, lengthy operation is in progress."; break;
+                case 0x25: msg = "0x25 CTAP2_ERR_NO_OPERATIONS No request is pending."; break;
+                case 0x26: msg = "0x26 CTAP2_ERR_UNSUPPORTED_ALGORITHM Authenticator does not support requested algorithm."; break;
+                case 0x27: msg = "0x27 CTAP2_ERR_OPERATION_DENIED  Not authorized for requested operation."; break;
+                case 0x28: msg = "0x28 CTAP2_ERR_KEY_STORE_FULL    Internal key storage is full."; break;
+                case 0x29: msg = "0x29 CTAP2_ERR_NOT_BUSY  Authenticator cannot cancel as it is not busy."; break;
+                case 0x2A: msg = "0x2A CTAP2_ERR_NO_OPERATION_PENDING No outstanding operations."; break;
+                case 0x2B: msg = "0x2B CTAP2_ERR_UNSUPPORTED_OPTION Unsupported option.";break;
+                case 0x2C: msg = "0x2C CTAP2_ERR_INVALID_OPTION Not a valid option for current operation."; break;
+                case 0x2D: msg = "0x2D CTAP2_ERR_KEEPALIVE_CANCEL  Pending keep alive was cancelled."; break;
+                case 0x2E: msg = "0x2E CTAP2_ERR_NO_CREDENTIALS    No valid credentials provided."; break;
+                case 0x2F: msg = "0x2F CTAP2_ERR_USER_ACTION_TIMEOUT   Timeout waiting for user interaction."; break;
                 case 0x30: msg = "0x30 CTAP2_ERR_NOT_ALLOWED   Continuation command, such as, authenticatorGetNextAssertion not allowed."; break;
                 case 0x31: msg = "0x31 CTAP2_ERR_PIN_INVALID   PIN Invalid."; break;
                 case 0x32: msg = "0x32 CTAP2_ERR_PIN_BLOCKED PIN Blocked.";  break;
@@ -37,50 +54,14 @@ namespace WebAuthnModokiDesktop
                 case 0x39: msg = "0x39 CTAP2_ERR_REQUEST_TOO_LARGE Authenticator cannot handle this request due to memory constraints."; break;
                 case 0x3A: msg = "0x3A CTAP2_ERR_ACTION_TIMEOUT The current operation has timed out."; break;
                 case 0x3B: msg = "0x3B CTAP2_ERR_UP_REQUIRED User presence is required for the requested operation."; break;
-
+                case 0x7F: msg = "0x7F CTAP1_ERR_OTHER Other unspecified error."; break;
+                case 0xDF: msg = "0xDF CTAP2_ERR_SPEC_LAST CTAP 2 spec last error."; break;
+                case 0xE0: msg = "0xE0 CTAP2_ERR_EXTENSION_FIRST Extension specific error."; break;
+                case 0xEF: msg = "0xEF CTAP2_ERR_EXTENSION_LAST Extension specific error."; break;
+                case 0xF0: msg = "0xF0 CTAP2_ERR_VENDOR_FIRST Vendor specific error."; break;
                 case 0xff: msg = "0xFF デバイス無し or CTAP2_ERR_VENDOR_LAST   Vendor specific error."; break;
             }
             return (msg);
-
-
-            /*
-0x15    CTAP2_ERR_LIMIT_EXCEEDED Limit for number of items exceeded.
-0x16    CTAP2_ERR_UNSUPPORTED_EXTENSION Unsupported extension.
-0x19    CTAP2_ERR_CREDENTIAL_EXCLUDED   Valid credential found in the exclude list.
-0x21    CTAP2_ERR_PROCESSING    Processing(Lengthy operation is in progress).
-0x22    CTAP2_ERR_INVALID_CREDENTIAL    Credential not valid for the authenticator.
-0x23    CTAP2_ERR_USER_ACTION_PENDING   Authentication is waiting for user interaction.
-0x24    CTAP2_ERR_OPERATION_PENDING Processing, lengthy operation is in progress.
-0x25    CTAP2_ERR_NO_OPERATIONS No request is pending.
-0x26    CTAP2_ERR_UNSUPPORTED_ALGORITHM Authenticator does not support requested algorithm.
-0x27    CTAP2_ERR_OPERATION_DENIED  Not authorized for requested operation.
-0x28    CTAP2_ERR_KEY_STORE_FULL    Internal key storage is full.
-0x29    CTAP2_ERR_NOT_BUSY  Authenticator cannot cancel as it is not busy.
-0x2A    CTAP2_ERR_NO_OPERATION_PENDING  No outstanding operations.
-0x2B    CTAP2_ERR_UNSUPPORTED_OPTION    Unsupported option.
-0x2C    CTAP2_ERR_INVALID_OPTION    Not a valid option for current operation.
-0x2D    CTAP2_ERR_KEEPALIVE_CANCEL  Pending keep alive was cancelled.
-0x2E    CTAP2_ERR_NO_CREDENTIALS    No valid credentials provided.
-0x2F    CTAP2_ERR_USER_ACTION_TIMEOUT   Timeout waiting for user interaction.
-0x30    CTAP2_ERR_NOT_ALLOWED   Continuation command, such as, authenticatorGetNextAssertion not allowed.
-0x31    CTAP2_ERR_PIN_INVALID   PIN Invalid.
-0x32    CTAP2_ERR_PIN_BLOCKED   PIN Blocked.
-0x33    CTAP2_ERR_PIN_AUTH_INVALID  PIN authentication, pinAuth, verification failed.
-0x34    CTAP2_ERR_PIN_AUTH_BLOCKED  PIN authentication, pinAuth, blocked.Requires power recycle to reset.
-0x35    CTAP2_ERR_PIN_NOT_SET   No PIN has been set.
-0x36    CTAP2_ERR_PIN_REQUIRED  PIN is required for the selected operation.
-0x37    CTAP2_ERR_PIN_POLICY_VIOLATION  PIN policy violation.Currently only enforces minimum length.
-0x38    CTAP2_ERR_PIN_TOKEN_EXPIRED pinToken expired on authenticator.
-0x39    CTAP2_ERR_REQUEST_TOO_LARGE Authenticator cannot handle this request due to memory constraints.
-0x3A    CTAP2_ERR_ACTION_TIMEOUT    The current operation has timed out.
-0x3B    CTAP2_ERR_UP_REQUIRED   User presence is required for the requested operation.
-0x7F    CTAP1_ERR_OTHER Other unspecified error.
-0xDF    CTAP2_ERR_SPEC_LAST CTAP 2 spec last error.
-0xE0    CTAP2_ERR_EXTENSION_FIRST   Extension specific error.
-0xEF    CTAP2_ERR_EXTENSION_LAST    Extension specific error.
-0xF0    CTAP2_ERR_VENDOR_FIRST  Vendor specific error.
-0xFF    CTAP2_ERR_VENDOR_LAST   Vendor specific error.
-*/
 
         }
     }
