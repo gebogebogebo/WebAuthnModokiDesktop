@@ -8,8 +8,10 @@ namespace WebAuthnModokiDesktop
 {
     internal class CTAPauthenticatorGetInfo : CTAPauthenticator
     {
-        public async Task<CTAPResponseInfo> SendAndResponse()
+        public async Task<CTAPResponseInfo> SendAndResponse(List<hidparam> hidparams)
         {
+            // PEND
+            this.HidParams = HidParams;
             var resi = await sendCommandandResponse(0x04, null);
 
             var response = new CTAPResponseInfo(resi);

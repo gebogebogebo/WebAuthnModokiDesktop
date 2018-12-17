@@ -16,6 +16,8 @@ namespace WebAuthnModokiDesktop
     {
         public const int VENDOR_ID = 0x1050;
         public const int PRODUCT_ID = 0x0120;
+        public List<hidparam> HidParams = null;
+
         [DataMember()]
         public string payloadJson { get; private set; }
 
@@ -105,6 +107,25 @@ namespace WebAuthnModokiDesktop
 
         IHidDevice HidDevice = null;
         CTAPHID U2fHidDevice = null;
+
+        public static HidDevice open(List<hidparam> hidparams)
+        {
+            HidDevice device = null;
+            foreach (var hidparam in hidparams) {
+                if (hidparam.ProductId == 0x00) {
+                    device = HidDevices.Enumerate(hidparam.VendorId).FirstOrDefault();
+                    if (device != null) {
+                        break;
+                    }
+                } else {
+                    device = HidDevices.Enumerate(hidparam.VendorId, hidparam.ProductId).FirstOrDefault();
+                    if (device != null) {
+                        break;
+                    }
+                }
+            }
+            return (device);
+        }
 
         public async Task<bool> open()
         {

@@ -50,7 +50,7 @@ namespace testUI03
 
         private async void buttonInfo_Click(object sender, RoutedEventArgs e)
         {
-            var ret = await WebAuthnModokiDesktop.credentials.info();
+            var ret = await WebAuthnModokiDesktop.credentials.info(WebAuthnModokiDesktop.hidparam.hidparamsFactory());
             var msg = ""; 
             msg = msg + string.Format($"isSuccess={ret.isSuccess}") + "\r\n";
             msg = msg + string.Format($"msg={ret.msg}") + "\r\n";

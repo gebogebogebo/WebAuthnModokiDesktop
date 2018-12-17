@@ -7,6 +7,36 @@ using HidLibrary;
 
 namespace WebAuthnModokiDesktop
 {
+    public class hidparam
+    {
+        public int VendorId { get; set; }
+        public int ProductId { get; set; }
+        public hidparam(int vendorId, int productId)
+        {
+            this.VendorId = vendorId;
+            this.ProductId = productId;
+        }
+        public hidparam(int vendorId)
+        {
+            this.VendorId = vendorId;
+            this.ProductId = 0x00;
+        }
+
+        public static List<hidparam> hidparamsFactory()
+        {
+            var ret = new List<hidparam>();
+            // Yubikey
+            //ret.Add(new hidparam(0x1050, 0x0120));
+            ret.Add(new hidparam(0x1050));
+
+            // BioPass FIDO2
+            ret.Add(new hidparam(0x096E));
+
+            return (ret);
+        }
+
+    }
+
     public class commandstatus
     {
         public class commandinfo
@@ -53,16 +83,17 @@ namespace WebAuthnModokiDesktop
             return false;
         }
 
-        public static commandstatus hidcheck()
+        public static commandstatus hidcheck(List<hidparam> hidparams)
         {
             var status = new commandstatus();
+            HidDevice device = null;
             try {
-                var yubikey = HidDevices.Enumerate(CTAPauthenticator.VENDOR_ID, CTAPauthenticator.PRODUCT_ID).FirstOrDefault();
-                if (yubikey == null) {
+                device = CTAPauthenticator.open(hidparams);
+                if (device == null) {
                     return (status);
                 }
-                yubikey.ReadManufacturer(out byte[] manufacturerRaw);
-                yubikey.ReadProduct(out byte[] productRaw);
+                device.ReadManufacturer(out byte[] manufacturerRaw);
+                device.ReadProduct(out byte[] productRaw);
 
                 var manufacturer = Encoding.Unicode.GetString(manufacturerRaw).TrimEnd('\0');
                 var product = Encoding.Unicode.GetString(productRaw).TrimEnd('\0');
@@ -74,6 +105,10 @@ namespace WebAuthnModokiDesktop
             } catch (Exception ex) {
                 status.msg = ex.Message.ToString();
                 return (status);
+            } finally {
+                if( device != null) {
+                    device.Dispose();
+                }
             }
             return status;
         }

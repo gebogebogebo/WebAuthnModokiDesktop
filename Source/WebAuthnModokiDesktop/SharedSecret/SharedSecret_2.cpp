@@ -113,10 +113,6 @@ int fido_createSharedSecret(
 		goto fail;
 	}
 
-	//str2bin("94a84fc8e9858cdcb2338578d87bbd36da858298f278248ff974cae4e5dcb788", private_key_b->d,64);
-	//str2bin("7e47690ddeb48eef8d8998338fdcf00ddde6b6db105cc60bb2677418416d7201", (*public_key_bG)->x, 64);
-	//str2bin("087b7568e1930ac3f5662550a90e3afcc11bcf8a273c843ef3d931c1f7f300c0", (*public_key_bG)->y, 64);
-
 	// log
 	log_str("---");
 	log_str("%s:ÅyPrivate Key-bÅz Ç±Ç±Ç≈ê∂ê¨ÇµÇΩîÈñßåÆ(COSE ES256 (ECDSA over P-256 with SHA-256))", __func__);

@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using System.IO;
 
 namespace testUI01
@@ -67,7 +66,7 @@ namespace testUI01
         private void button_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【test - Start】");
-            var ret = WebAuthnModokiDesktop.credentials.hidcheck();
+            var ret = WebAuthnModokiDesktop.credentials.hidcheck(WebAuthnModokiDesktop.hidparam.hidparamsFactory());
             setResponse(ret);
             log("◆◆◆【test - END】");
         }
@@ -75,7 +74,7 @@ namespace testUI01
         private async void button1_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【info - Start】");
-            var ret = await WebAuthnModokiDesktop.credentials.info();
+            var ret = await WebAuthnModokiDesktop.credentials.info(WebAuthnModokiDesktop.hidparam.hidparamsFactory());
             setResponse(ret);
             log("◆◆◆【info - END】");
         }

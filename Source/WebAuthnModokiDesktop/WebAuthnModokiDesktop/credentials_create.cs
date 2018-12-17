@@ -7,6 +7,7 @@ using System.IO;
 
 namespace WebAuthnModokiDesktop
 {
+
     public class createcommandstatus:commandstatus
     {
         public CTAPResponseAttestation attestation;

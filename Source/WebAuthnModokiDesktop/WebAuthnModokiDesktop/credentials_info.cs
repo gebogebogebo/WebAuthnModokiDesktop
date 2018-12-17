@@ -15,21 +15,21 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<infocommandstatus> info()
+        public static async Task<infocommandstatus> info(List<hidparam> hidparams)
         {
             var status = new infocommandstatus();
             try {
 
                 // hid
                 {
-                    var ret = credentials.hidcheck();
+                    var ret = credentials.hidcheck(hidparams);
                     status.HidInfo = ret.msg;
                 }
 
                 // getinfo
                 {
                     var ctap = new CTAPauthenticatorGetInfo();
-                    var ret = await ctap.SendAndResponse();
+                    var ret = await ctap.SendAndResponse(hidparams);
                     status.commands.Add(new commandstatus.commandinfo(ctap, ret));
                     if (ret.Status != 0x00) {
                         throw (new Exception("GetInfo"));
