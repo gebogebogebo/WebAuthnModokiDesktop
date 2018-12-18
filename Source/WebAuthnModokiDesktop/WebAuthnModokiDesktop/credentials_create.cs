@@ -15,25 +15,25 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<createcommandstatus> create(string publickeyJson,string pin="")
+        public static async Task<createcommandstatus> create(List<hidparam> hidParams, string publickeyJson,string pin="")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforCreate>(publickeyJson);
                 publickey.pin = pin;
-                return (await create(publickey));
+                return (await create(hidParams,publickey));
             } catch (Exception ex) {
                 var status = new createcommandstatus();
                 status.msg = ex.Message.ToString();
                 return (status);
             }
         }
-        public static async Task<createcommandstatus> create(PublicKeyforCreate publickey)
+        public static async Task<createcommandstatus> create(List<hidparam> hidParams,PublicKeyforCreate publickey)
         {
             var status = new createcommandstatus();
 
             try {
                 if( publickey.rp == null || publickey.user == null || publickey.challenge == null) {
-                    return status;
+                    throw (new Exception("Param Error"));
                 }
 
                 var ctap = new CTAPauthenticatorMakeCredential();
@@ -57,36 +57,35 @@ namespace WebAuthnModokiDesktop
 
                     var ctap2 = new CTAPauthenticatorClientPIN();
 
-                    var st1 = await ctap2.GetKeyAgreement();
+                    var st1 = await ctap2.GetKeyAgreement(hidParams);
                     status.commands.Add(new commandstatus.commandinfo(ctap2, st1));
                     if (st1.Status != 0x00) {
-                        return status;
+                        throw (new Exception("GetKeyAgreement"));
                     }
 
                     var sharedSecret = ctap2.createSharedSecret(ctap2.Authenticator_KeyAgreement);
 
                     var pinHashEnc = ctap2.createPinHashEnc(pin, sharedSecret);
 
-                    var token = await ctap2.GetPINToken(pinHashEnc);
+                    var token = await ctap2.GetPINToken(hidParams,pinHashEnc);
                     status.commands.Add(new commandstatus.commandinfo(ctap2, token));
                     if (token.Status != 0x00) {
-                        return status;
+                        throw (new Exception("GetPINToken"));
                     }
 
                     ctap.PinAuth = ctap2.createPinAuth(sharedSecret, ctap.ClientDataHash, token.PinTokenEnc);
                 }
 
-                var att = await ctap.SendAndResponse();
+                var att = await ctap.SendAndResponse(hidParams);
                 status.commands.Add(new commandstatus.commandinfo(ctap, att));
                 if (att.Status != 0x00) {
-                    return status;
+                    throw (new Exception("MakeCredential"));
                 }
 
                 status.attestation = att;
                 status.isSuccess = true;
             } catch (Exception ex) {
-                status.msg = ex.Message.ToString();
-                return (status);
+                status.setErrorMsg(ex);
             }
             return status;
         }

@@ -7,21 +7,29 @@ using PeterO.Cbor;
 
 namespace WebAuthnModokiDesktop
 {
-    public class CTAPResponseInfo:CTAPResponse
+    public class CTAPResponseInfo : CTAPResponse
     {
-        public string[] Versions{ get; private set; }
+        public enum OptionFlag
+        {
+            absent,                             // 未対応
+            present_and_set_to_false,           // 未設定
+            present_and_set_to_true,            // 設定済み
+        };
+
+        public string[] Versions { get; private set; }
         public string[] Extensions { get; private set; }
         public byte[] Aaguid { get; private set; }
-        public bool Option_rk { get; private set; }
-        public bool Option_up { get; private set; }
-        public bool Option_plat { get; private set; }
-        public bool Option_clientPin { get; private set; }
+        public OptionFlag Option_rk { get; private set; }
+        public OptionFlag Option_up { get; private set; }
+        public OptionFlag Option_plat { get; private set; }
+        public OptionFlag Option_clientPin { get; private set; }
+        public OptionFlag Option_uv { get; private set; }
         public int MaxMsgSize { get; private set; }
         public int[] PinProtocols { get; private set; }
 
         public CTAPResponseInfo(CTAPauthenticator.CTAPResponseInner resi) : base(resi)
         {
-            if( resi.ResponseDataCbor != null) {
+            if (resi.ResponseDataCbor != null) {
                 parse(resi.ResponseDataCbor);
             }
         }
@@ -36,18 +44,30 @@ namespace WebAuthnModokiDesktop
                 } else if (keyVal == 0x03) {
                     Aaguid = cbor[key].GetByteString();
                 } else if (keyVal == 0x04) {
-                    Option_rk = getKeyValueAsBool(cbor[key], "rk");
-                    Option_up = getKeyValueAsBool(cbor[key], "up");
-                    Option_plat = getKeyValueAsBool(cbor[key], "plat");
-                    Option_clientPin = getKeyValueAsBool(cbor[key], "clientPin");
+                    Option_rk = getKeyValueAsOptionFlag(cbor[key], "rk");
+                    Option_up = getKeyValueAsOptionFlag(cbor[key], "up");
+                    Option_plat = getKeyValueAsOptionFlag(cbor[key], "plat");
+                    Option_clientPin = getKeyValueAsOptionFlag(cbor[key], "clientPin");
+                    Option_uv = getKeyValueAsOptionFlag(cbor[key], "uv");
                 } else if (keyVal == 0x05) {
                     MaxMsgSize = cbor[key].AsInt16();
                 } else if (keyVal == 0x06) {
                     PinProtocols = getKeyValueAsIntArray(cbor[key]);
                 }
             }
-
         }
 
+        private OptionFlag getKeyValueAsOptionFlag(CBORObject obj, string key)
+        {
+            bool? flag = getKeyValueAsBoolorNull(obj, key);
+            if (flag == null) {
+                return (OptionFlag.absent);
+            } else if (flag == true) {
+                return (OptionFlag.present_and_set_to_true);
+            } else {
+                return (OptionFlag.present_and_set_to_false);
+            }
+        }
     }
 }
+

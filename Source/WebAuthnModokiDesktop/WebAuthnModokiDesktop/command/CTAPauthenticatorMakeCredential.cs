@@ -33,8 +33,18 @@ namespace WebAuthnModokiDesktop
 
         public byte[] ClientDataHash { get; set; }
 
-        public async Task<CTAPResponseAttestation> SendAndResponse()
+        public async Task<CTAPResponseAttestation> SendAndResponse(List<hidparam> hidParams)
         {
+            // check
+            {
+                if (RpId == null) RpId = "";
+                if (RpName == null) RpName = "";
+                if (UserId == null) UserId = "";
+                if (UserName == null) UserName = "";
+                if (UserDisplayName == null) UserDisplayName = "";
+                if (ClientDataHash == null) ClientDataHash = new byte[0];
+            }
+
             var cbor = CBORObject.NewMap();
 
             // 0x01 : clientDataHash
@@ -76,7 +86,7 @@ namespace WebAuthnModokiDesktop
                 cbor.Add(0x09, 1);
             }
 
-            var resi = await sendCommandandResponse(0x01, cbor);
+            var resi = await sendCommandandResponse(hidParams,0x01, cbor);
 
             var response = new CTAPResponseAttestation(resi);
             response.CommandDataJson = this.payloadJson;

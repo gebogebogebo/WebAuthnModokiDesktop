@@ -14,10 +14,6 @@ namespace WebAuthnModokiDesktop
     [DataContract]
     public class CTAPauthenticator
     {
-        public const int VENDOR_ID = 0x1050;
-        public const int PRODUCT_ID = 0x0120;
-        public List<hidparam> HidParams = null;
-
         [DataMember()]
         public string payloadJson { get; private set; }
 
@@ -59,36 +55,37 @@ namespace WebAuthnModokiDesktop
             return (name);
         }
 
-        protected async Task<CTAPResponseInner> sendCommandandResponse(byte command, CBORObject payload)
+        protected async Task<CTAPResponseInner> sendCommandandResponse(List<hidparam> hidParams, byte command, CBORObject payload)
         {
             byte[] send = null;
 
             payloadJson = string.Format($"[0x{command:X2}]({getCommandName(command)})");
-            if( payload != null) {
+            if (payload != null) {
                 payloadJson = payloadJson + payload.ToJSONString();
                 Console.WriteLine($"Send: {payloadJson}");
 
                 var payloadb = payload.EncodeToBytes();
                 send = new byte[] { command }.Concat(payloadb).ToArray();
-            }else {
+            } else {
                 send = new byte[] { command };
             }
-            return (await sendCommandandResponse(send));
+            return (await sendCommandandResponse(hidParams, send));
         }
 
-        protected static async Task<CTAPResponseInner> sendCommandandResponse(byte[] send)
+        protected static async Task<CTAPResponseInner> sendCommandandResponse(List<hidparam> hidParams,byte[] send)
         {
             var response = new CTAPResponseInner();
 
             IHidDevice hidDevice = null;
-            using (hidDevice = HidDevices.Enumerate(VENDOR_ID, PRODUCT_ID).FirstOrDefault()) {
-                if(hidDevice == null) {
+            try {
+                hidDevice = CTAPauthenticator.find(hidParams);
+                if (hidDevice == null) {
                     response.Status = 0xff;
                     return response;
                 }
-                using (var u2fHidDevice = await CTAPHID.OpenAsync(hidDevice)) {
+                using (var openedDevice = await CTAPHID.OpenAsync(hidDevice)) {
 
-                    var byteresponse = await u2fHidDevice.CborAsync(send);
+                    var byteresponse = await openedDevice.CborAsync(send);
 
                     response.Status = byteresponse[0];
 
@@ -101,14 +98,18 @@ namespace WebAuthnModokiDesktop
 
                     }
                 }
+
+            } catch (Exception ex) {
+
+            } finally {
+                if (hidDevice != null) {
+                    hidDevice.Dispose();
+                }
             }
             return (response);
         }
 
-        IHidDevice HidDevice = null;
-        CTAPHID U2fHidDevice = null;
-
-        public static HidDevice open(List<hidparam> hidparams)
+        public static HidDevice find(List<hidparam> hidparams)
         {
             HidDevice device = null;
             foreach (var hidparam in hidparams) {
@@ -125,58 +126,6 @@ namespace WebAuthnModokiDesktop
                 }
             }
             return (device);
-        }
-
-        public async Task<bool> open()
-        {
-            HidDevice = HidDevices.Enumerate(VENDOR_ID, PRODUCT_ID).FirstOrDefault();
-            U2fHidDevice = await CTAPHID.OpenAsync(HidDevice);
-
-            return (true);
-        }
-        public void close()
-        {
-            U2fHidDevice.Dispose();
-            HidDevice.Dispose();
-            U2fHidDevice = null;
-            HidDevice = null;
-        }
-
-        protected async Task<CTAPResponseInner> sendCommandandResponse2(byte command, CBORObject payload)
-        {
-            byte[] send = null;
-
-            payloadJson = string.Format($"[0x{command:X2}]");
-            if (payload != null) {
-                payloadJson = payloadJson + payload.ToJSONString();
-                Console.WriteLine($"Send: {payloadJson}");
-
-                var payloadb = payload.EncodeToBytes();
-                send = new byte[] { command }.Concat(payloadb).ToArray();
-            } else {
-                send = new byte[] { command };
-            }
-            return (await sendCommandandResponse2(send));
-        }
-
-        protected async Task<CTAPResponseInner> sendCommandandResponse2(byte[] send)
-        {
-            var response = new CTAPResponseInner();
-
-            var byteresponse = await U2fHidDevice.CborAsync(send);
-
-            response.Status = byteresponse[0];
-
-            if (byteresponse.Length > 1) {
-                var cobrbyte = byteresponse.Skip(1).ToArray();
-                response.ResponseDataCbor = CBORObject.DecodeFromBytes(cobrbyte, CBOREncodeOptions.Default);
-
-                var json = response.ResponseDataCbor.ToJSONString();
-                Console.WriteLine($"Recv: {json}");
-
-            }
-
-            return (response);
         }
 
         static public byte[] CreateClientDataHash(string challenge)

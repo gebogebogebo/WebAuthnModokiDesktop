@@ -8,9 +8,9 @@ namespace WebAuthnModokiDesktop
 {
     internal class CTAPauthenticatorGetNextAssertion : CTAPauthenticatorGetAssertion
     {
-        new public async Task<CTAPResponseAssertion> SendAndResponse()
+        new public async Task<CTAPResponseAssertion> SendAndResponse(List<hidparam> hidParams)
         {
-            var resi = await sendCommandandResponse(0x08,null);
+            var resi = await sendCommandandResponse(hidParams,0x08, null);
             var response = new CTAPResponseAssertion(resi);
             response.CommandDataJson = this.payloadJson;
 

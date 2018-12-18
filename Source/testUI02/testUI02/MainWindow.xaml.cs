@@ -12,9 +12,12 @@ namespace testUI02
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<WebAuthnModokiDesktop.hidparam> hidParams;
+
         public MainWindow()
         {
             InitializeComponent();
+            hidParams = WebAuthnModokiDesktop.hidparam.getDefaultParams();
         }
 
         private void logResponse(WebAuthnModokiDesktop.commandstatus res)
@@ -60,10 +63,10 @@ namespace testUI02
         {
             log("");
             log("<Info>");
-            var response = await WebAuthnModokiDesktop.credentials.info();
+            var response = await WebAuthnModokiDesktop.credentials.info(hidParams);
             logResponse(response);
             if( response.isSuccess == true) {
-                MessageBox.Show("Success!");
+                MessageBox.Show("Success!\r\n\r\n" + response.HidInfo);
             } else {
                 MessageBox.Show("Failed!");
             }
@@ -86,6 +89,11 @@ namespace testUI02
             }
             string pin = textPIN.Text;
 
+            string uv = "discouraged";
+            if ((bool)checkUV.IsChecked) {
+                uv = "preferred";
+            }
+
             string json =
                 "{" +
                     "rp : {" +
@@ -100,10 +108,11 @@ namespace testUI02
                     "timeout: 60000," +
                     "authenticatorSelection : {" +
                         string.Format($"requireResidentKey : {rk},") +
+                        string.Format($"userVerification : '{uv}'") +
                     "}," +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
-            var response = await WebAuthnModokiDesktop.credentials.create(json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.create(hidParams,json, pin);
             if (response.isSuccess == true) {
                 log("---");
                 log("Registration successful!");
@@ -136,24 +145,29 @@ namespace testUI02
                 return;
             }
 
+            string uv = "discouraged";
+            if ((bool)checkUV.IsChecked) {
+                uv = "preferred";
+            }
+
             byte[] challenge = System.Text.Encoding.ASCII.GetBytes("this is challenge");
 
             string pin = textPIN.Text;
 
             string json =
-               "{" +
+                "{" +
                     string.Format($"timeout : 60000,") +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                     string.Format($"rpId : 'demo.WebauthnMODOKI.gebogebo.com',") +
-                   @"allowCredentials : [{" +
-                       string.Format($"id : [{string.Join(",", CredentialId)}],") +
-                       string.Format($"type : 'public-key',") +
-                   @"}]," +
-                   string.Format($"requireUserPresence : 'true',") +
-                   string.Format($"userVerification : 'discouraged',") +
+                    "allowCredentials : [{" +
+                        string.Format($"id : [{string.Join(",", CredentialId)}],") +
+                        string.Format($"type : 'public-key',") +
+                    "}]," +
+                    string.Format($"requireUserPresence : 'true',") +
+                    string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.get(hidParams,json, pin);
 
             if(response.isSuccess == true) {
                 log("---");
@@ -182,16 +196,21 @@ namespace testUI02
 
             string pin = textPIN.Text;
 
+            string uv = "discouraged";
+            if ((bool)checkUV.IsChecked) {
+                uv = "preferred";
+            }
+
             string json =
                "{" +
                     string.Format($"timeout : 60000,") +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                     string.Format($"rpId : 'demo.WebauthnMODOKI.gebogebo.com',") +
                    string.Format($"requireUserPresence : 'true',") +
-                   string.Format($"userVerification : 'discouraged',") +
+                   string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.get(hidParams,json, pin);
 
             if (response.isSuccess == true) {
                 log("---");

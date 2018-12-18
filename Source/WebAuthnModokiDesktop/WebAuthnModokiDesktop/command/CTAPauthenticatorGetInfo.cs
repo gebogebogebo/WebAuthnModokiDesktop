@@ -10,9 +10,7 @@ namespace WebAuthnModokiDesktop
     {
         public async Task<CTAPResponseInfo> SendAndResponse(List<hidparam> hidparams)
         {
-            // PEND
-            this.HidParams = HidParams;
-            var resi = await sendCommandandResponse(0x04, null);
+            var resi = await sendCommandandResponse(hidparams,0x04, null);
 
             var response = new CTAPResponseInfo(resi);
             response.CommandDataJson = this.payloadJson;

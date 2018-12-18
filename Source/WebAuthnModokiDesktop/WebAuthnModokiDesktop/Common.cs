@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 
 namespace WebAuthnModokiDesktop
 {
-    internal class Common
+    public class Common
     {
         // 16進数文字列 => Byte配列
         public static byte[] HexStringToBytes(string str)
@@ -85,7 +85,7 @@ namespace WebAuthnModokiDesktop
             }
         }
 
-        public static byte[] AES256CBCEnc(byte[] key, byte[] data)
+        internal static byte[] AES256CBCEnc(byte[] key, byte[] data)
         {
             byte[] encdata;
             // pinHashEnc = AES256-CBC(sharedSecret, IV=0, pinsha16)
@@ -117,7 +117,7 @@ namespace WebAuthnModokiDesktop
         }
 
         // 暗号化されたBase64形式の入力文字列をAES復号して平文の文字列を返すメソッド
-        public static async Task<byte[]> AES256CBC_Decrypt(byte[] key,byte[] src)
+        internal static async Task<byte[]> AES256CBC_Decrypt(byte[] key,byte[] src)
         {
             byte[] data;
 
@@ -157,7 +157,7 @@ namespace WebAuthnModokiDesktop
         }
 
 
-        public static string Decrypt(byte[] key,byte[] cipherText)
+        internal static string Decrypt(byte[] key,byte[] cipherText)
         {
             var plainText = string.Empty;
 

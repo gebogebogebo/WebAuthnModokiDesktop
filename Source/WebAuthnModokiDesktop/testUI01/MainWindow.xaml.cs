@@ -21,9 +21,13 @@ namespace testUI01
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<WebAuthnModokiDesktop.hidparam> hidParams;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            hidParams = WebAuthnModokiDesktop.hidparam.getDefaultParams();
         }
 
         private void setResponse(WebAuthnModokiDesktop.CTAPauthenticator ctap, WebAuthnModokiDesktop.CTAPResponse res)
@@ -66,7 +70,7 @@ namespace testUI01
         private void button_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【test - Start】");
-            var ret = WebAuthnModokiDesktop.credentials.hidcheck(WebAuthnModokiDesktop.hidparam.hidparamsFactory());
+            var ret = WebAuthnModokiDesktop.credentials.hidcheck(hidParams);
             setResponse(ret);
             log("◆◆◆【test - END】");
         }
@@ -74,7 +78,7 @@ namespace testUI01
         private async void button1_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【info - Start】");
-            var ret = await WebAuthnModokiDesktop.credentials.info(WebAuthnModokiDesktop.hidparam.hidparamsFactory());
+            var ret = await WebAuthnModokiDesktop.credentials.info(hidParams);
             setResponse(ret);
             log("◆◆◆【info - END】");
         }
@@ -123,12 +127,12 @@ namespace testUI01
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.create(json, pin);
+            var ret = await WebAuthnModokiDesktop.credentials.create(hidParams, json, pin);
             setResponse(ret);
 
             // Export_File
             if (ret.isSuccess == true) {
-                WebAuthnModokiDesktop.credentials.serializeAttestationToFile(ret.attestation,string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                WebAuthnModokiDesktop.credentials.serializeAttestationToFile(ret.attestation, string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
             }
 
             log("【MakeCredential - End】");
@@ -150,6 +154,11 @@ namespace testUI01
             var credentialid = new byte[0];
             if ((bool)checkGetAssertionCredentialId.IsChecked) {
                 var att = WebAuthnModokiDesktop.credentials.deSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                if (att == null) {
+                    log("Error deSerializeAttestationFromFile");
+                    return;
+                }
+
                 credentialid = att.CredentialId;
             }
 
@@ -176,7 +185,7 @@ namespace testUI01
                    string.Format($"userVerification : '{userVerification}',") +
                 "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.get(json, pin);
+            var ret = await WebAuthnModokiDesktop.credentials.get(hidParams, json, pin);
             setResponse(ret);
 
             log("【GetAssertion - End】");
@@ -186,25 +195,31 @@ namespace testUI01
         {
             log("◆◆◆【setpin - Start】");
             string pin = textBoxPIN.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.setpin(pin);
+            var ret = await WebAuthnModokiDesktop.credentials.setpin(hidParams, pin);
             setResponse(ret);
             log("◆◆◆【setpin - END】");
         }
 
         private async void button5_Click(object sender, RoutedEventArgs e)
         {
+            // 認証
             byte[] challenge = System.Text.Encoding.ASCII.GetBytes("this is challenge");
+            string uv = "discouraged";
 
             string json =
                "{" +
                     string.Format($"timeout : 60000,") +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
-                    string.Format($"rpId : 'gebo1.com',") +
+                    string.Format($"rpId : 'demo.WebauthnMODOKI.gebogebo.com',") +
+                   string.Format($"requireUserPresence : 'true',") +
+                   string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.get(json,"1234");
+            var response = await WebAuthnModokiDesktop.credentials.get(hidParams, json, "1234");
+            if (response.isSuccess == true) {
 
-            int a = 0;
+            }
         }
     }
+
 }

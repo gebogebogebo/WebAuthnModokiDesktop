@@ -15,21 +15,21 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<infocommandstatus> info(List<hidparam> hidparams)
+        public static async Task<infocommandstatus> info(List<hidparam> hidParams)
         {
             var status = new infocommandstatus();
             try {
 
                 // hid
                 {
-                    var ret = credentials.hidcheck(hidparams);
+                    var ret = credentials.hidcheck(hidParams);
                     status.HidInfo = ret.msg;
                 }
 
                 // getinfo
                 {
                     var ctap = new CTAPauthenticatorGetInfo();
-                    var ret = await ctap.SendAndResponse(hidparams);
+                    var ret = await ctap.SendAndResponse(hidParams);
                     status.commands.Add(new commandstatus.commandinfo(ctap, ret));
                     if (ret.Status != 0x00) {
                         throw (new Exception("GetInfo"));
@@ -40,7 +40,7 @@ namespace WebAuthnModokiDesktop
                 // retry
                 {
                     var ctap = new CTAPauthenticatorClientPIN();
-                    var ret = await ctap.GetRetries();
+                    var ret = await ctap.GetRetries(hidParams);
                     status.commands.Add(new commandstatus.commandinfo(ctap, ret));
                     if (ret.Status != 0x00) {
                         throw (new Exception("GetRetries"));

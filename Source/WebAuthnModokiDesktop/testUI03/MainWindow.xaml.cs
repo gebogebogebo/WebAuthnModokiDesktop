@@ -20,15 +20,19 @@ namespace testUI03
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<WebAuthnModokiDesktop.hidparam> hidParams;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            hidParams = WebAuthnModokiDesktop.hidparam.getDefaultParams();
         }
 
         private async void buttonSetPIN_Click(object sender, RoutedEventArgs e)
         {
             string newpin = textNewPINSet.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.setpin(newpin);
+            var ret = await WebAuthnModokiDesktop.credentials.setpin(hidParams,newpin);
             if (ret.isSuccess == true) {
                 textStatusSet.Text = "Success! " + ret.msg;
             } else {
@@ -40,7 +44,7 @@ namespace testUI03
         {
             string newpin = textNewPIN.Text;
             string currentpin = textCurrentPIN.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.changepin(newpin,currentpin);
+            var ret = await WebAuthnModokiDesktop.credentials.changepin(hidParams,newpin, currentpin);
             if (ret.isSuccess == true) {
                 textStatus.Text = "Success! " + ret.msg;
             } else {
@@ -50,7 +54,7 @@ namespace testUI03
 
         private async void buttonInfo_Click(object sender, RoutedEventArgs e)
         {
-            var ret = await WebAuthnModokiDesktop.credentials.info(WebAuthnModokiDesktop.hidparam.hidparamsFactory());
+            var ret = await WebAuthnModokiDesktop.credentials.info(WebAuthnModokiDesktop.hidparam.getDefaultParams());
             var msg = ""; 
             msg = msg + string.Format($"isSuccess={ret.isSuccess}") + "\r\n";
             msg = msg + string.Format($"msg={ret.msg}") + "\r\n";
@@ -58,10 +62,11 @@ namespace testUI03
             msg = msg + string.Format($"PIN Retry Count={ret.PinRetryCount}") + "\r\n";
 
             if( ret.AuthenticatorInfo != null) {
-                msg = msg + string.Format($"PIN Present={ret.AuthenticatorInfo.Option_clientPin}") + "\r\n";
+                msg = msg + string.Format($"Platform={ret.AuthenticatorInfo.Option_plat}") + "\r\n";
                 msg = msg + string.Format($"Enable Resident Key={ret.AuthenticatorInfo.Option_rk}") + "\r\n";
+                msg = msg + string.Format($"PIN Present={ret.AuthenticatorInfo.Option_clientPin}") + "\r\n";
                 msg = msg + string.Format($"Enable User Presence={ret.AuthenticatorInfo.Option_up}") + "\r\n";
-                msg = msg + string.Format($"Option Plat={ret.AuthenticatorInfo.Option_plat}") + "\r\n";
+                msg = msg + string.Format($"Enable User Verification={ret.AuthenticatorInfo.Option_uv}") + "\r\n";
                 msg = msg + string.Format($"Versions={string.Join(",", ret.AuthenticatorInfo.Versions)}") + "\r\n";
             }
 

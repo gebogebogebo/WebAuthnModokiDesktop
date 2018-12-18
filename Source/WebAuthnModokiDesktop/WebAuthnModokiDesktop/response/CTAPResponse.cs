@@ -58,6 +58,15 @@ namespace WebAuthnModokiDesktop
             }
         }
 
+        protected bool? getKeyValueAsBoolorNull(CBORObject obj, string key)
+        {
+            if (obj.ContainsKey(key)) {
+                return (obj[key].AsBoolean());
+            } else {
+                return null;
+            }
+        }
+
         protected string[] getKeyValueAsStringArray(CBORObject obj)
         {
             var tmp = new List<string>();

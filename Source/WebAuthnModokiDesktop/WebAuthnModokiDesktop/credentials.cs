@@ -22,7 +22,7 @@ namespace WebAuthnModokiDesktop
             this.ProductId = 0x00;
         }
 
-        public static List<hidparam> hidparamsFactory()
+        public static List<hidparam> getDefaultParams()
         {
             var ret = new List<hidparam>();
             // Yubikey
@@ -88,7 +88,7 @@ namespace WebAuthnModokiDesktop
             var status = new commandstatus();
             HidDevice device = null;
             try {
-                device = CTAPauthenticator.open(hidparams);
+                device = CTAPauthenticator.find(hidparams);
                 if (device == null) {
                     return (status);
                 }
@@ -113,12 +113,12 @@ namespace WebAuthnModokiDesktop
             return status;
         }
 
-        public static async Task<commandstatus> setpin(string newpin)
+        public static async Task<commandstatus> setpin(List<hidparam> hidParams,string newpin)
         {
             var status = new commandstatus();
             try {
                 var ctap = new CTAPauthenticatorClientPIN();
-                var st = await ctap.GetKeyAgreement();
+                var st = await ctap.GetKeyAgreement(hidParams);
                 status.commands.Add(new commandstatus.commandinfo(ctap, st));
                 if (st.Status != 0x00) {
                     throw (new Exception("GetKeyAgreement"));
@@ -132,7 +132,7 @@ namespace WebAuthnModokiDesktop
                 // newPinEnc: AES256-CBC(sharedSecret, IV = 0, newPin)
                 byte[] newPinEnc = ctap.createNewPinEnc(sharedSecret, newpin);
 
-                var st2 = await ctap.SetPIN(pinAuth, newPinEnc);
+                var st2 = await ctap.SetPIN(hidParams,pinAuth, newPinEnc);
                 status.commands.Add(new commandstatus.commandinfo(ctap, st2));
                 if (st2.Status != 0x00) {
                     throw (new Exception("SetPIN"));
@@ -145,13 +145,13 @@ namespace WebAuthnModokiDesktop
             return status;
         }
 
-        public static async Task<commandstatus> changepin(string newpin, string currentpin)
+        public static async Task<commandstatus> changepin(List<hidparam> hidParams,string newpin, string currentpin)
         {
             var status = new commandstatus();
 
             try {
                 var ctap = new CTAPauthenticatorClientPIN();
-                var st = await ctap.GetKeyAgreement();
+                var st = await ctap.GetKeyAgreement(hidParams);
                 status.commands.Add(new commandstatus.commandinfo(ctap, st));
                 if (st.Status != 0x00) {
                     throw (new Exception("GetKeyAgreement"));
@@ -171,7 +171,7 @@ namespace WebAuthnModokiDesktop
                 //  AES256-CBC(sharedSecret, IV = 0, LEFT(SHA-256(curPin), 16)).
                 var pinHashEnc = ctap.createPinHashEnc(currentpin, sharedSecret);
 
-                var st2 = await ctap.ChangePIN(pinAuth, newPinEnc, pinHashEnc);
+                var st2 = await ctap.ChangePIN(hidParams,pinAuth, newPinEnc, pinHashEnc);
                 status.commands.Add(new commandstatus.commandinfo(ctap, st2));
                 if (st2.Status != 0x00) {
                     throw (new Exception("ChangePIN"));

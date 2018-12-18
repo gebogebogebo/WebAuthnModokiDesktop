@@ -17,12 +17,12 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<getcommandstatus> get(string publickeyJson, string pin = "")
+        public static async Task<getcommandstatus> get(List<hidparam> hidParams,string publickeyJson, string pin = "")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforGet>(publickeyJson);
                 publickey.pin = pin;
-                return (await get(publickey));
+                return (await get(hidParams,publickey));
             } catch (Exception ex) {
                 var status = new getcommandstatus();
                 status.msg = ex.Message.ToString();
@@ -30,7 +30,7 @@ namespace WebAuthnModokiDesktop
             }
         }
 
-        public static async Task<getcommandstatus> get(PublicKeyforGet publickey)
+        public static async Task<getcommandstatus> get(List<hidparam> hidParams,PublicKeyforGet publickey)
         {
             var status = new getcommandstatus();
 
@@ -65,39 +65,39 @@ namespace WebAuthnModokiDesktop
 
                     var ctap2 = new CTAPauthenticatorClientPIN();
 
-                    var st1 = await ctap2.GetKeyAgreement();
+                    var st1 = await ctap2.GetKeyAgreement(hidParams);
                     status.commands.Add(new commandstatus.commandinfo(ctap2, st1));
                     if (st1.Status != 0x00) {
-                        return status;
+                        throw (new Exception("GetKeyAgreement"));
                     }
 
                     var sharedSecret = ctap2.createSharedSecret(ctap2.Authenticator_KeyAgreement);
 
                     var pinHashEnc = ctap2.createPinHashEnc(pin, sharedSecret);
 
-                    var token = await ctap2.GetPINToken(pinHashEnc);
+                    var token = await ctap2.GetPINToken(hidParams,pinHashEnc);
                     status.commands.Add(new commandstatus.commandinfo(ctap2, token));
                     if (token.Status != 0x00) {
-                        return status;
+                        throw (new Exception("GetPINToken"));
                     }
 
                     ctap.PinAuth = ctap2.createPinAuth(sharedSecret, ctap.ClientDataHash, token.PinTokenEnc);
                 }
 
-                var ret = await ctap.SendAndResponse();
+                var ret = await ctap.SendAndResponse(hidParams);
                 status.commands.Add(new commandstatus.commandinfo(ctap, ret));
                 if (ret.Status != 0x00) {
-                    return status;
+                    throw (new Exception("GetAssertion"));
                 }
                 status.assertions.Add(ret);
 
                 if (ret.NumberOfCredentials > 0) {
                     for (int intIc = 0; intIc < ret.NumberOfCredentials - 1; intIc++) {
                         var next = new CTAPauthenticatorGetNextAssertion();
-                        var nextret = await next.SendAndResponse();
+                        var nextret = await next.SendAndResponse(hidParams);
                         status.commands.Add(new commandstatus.commandinfo(next, nextret));
                         if (ret.Status != 0x00) {
-                            return status;
+                            throw (new Exception("GetNextAssertion"));
                         }
                         status.assertions.Add(nextret);
                     }
@@ -105,8 +105,7 @@ namespace WebAuthnModokiDesktop
 
                 status.isSuccess = true;
             } catch (Exception ex) {
-                status.msg = ex.Message.ToString();
-                return (status);
+                status.setErrorMsg(ex);
             }
             return status;
         }

@@ -20,7 +20,7 @@ namespace WebAuthnModokiDesktop
         static extern int Aes256cbc_Dec(string key, string inbuf, StringBuilder outbuf);
 
         public int RetryCount { get; private set; }
-        public async Task<CTAPResponse> GetRetries()
+        public async Task<CTAPResponse> GetRetries(List<hidparam> hidParams)
         {
             var response = new CTAPResponse();
 
@@ -34,7 +34,7 @@ namespace WebAuthnModokiDesktop
 
             var payload = cbor.EncodeToBytes();
             var send = new byte[] { 0x06 }.Concat(payload).ToArray();
-            var resi = await sendCommandandResponse(send);
+            var resi = await sendCommandandResponse(hidParams,send);
 
             if (resi.ResponseDataCbor != null) {
                 foreach (var key in resi.ResponseDataCbor.Keys) {
@@ -58,7 +58,7 @@ namespace WebAuthnModokiDesktop
         public KeyAgreement Authenticator_KeyAgreement { get; private set; }
         public KeyAgreement My_KeyAgreement { get; private set; }
 
-        public async Task<CTAPResponse> GetKeyAgreement()
+        public async Task<CTAPResponse> GetKeyAgreement(List<hidparam> hidParams)
         {
             var response = new CTAPResponse();
 
@@ -71,7 +71,7 @@ namespace WebAuthnModokiDesktop
             cbor.Add(0x02, 0x02);
 
             {
-                var resi = await sendCommandandResponse(0x06, cbor);
+                var resi = await sendCommandandResponse(hidParams,0x06, cbor);
 
                 if (resi.ResponseDataCbor != null) {
                     var json = resi.ResponseDataCbor.ToJSONString();
@@ -86,7 +86,7 @@ namespace WebAuthnModokiDesktop
             return (response);
         }
 
-        public async Task<CTAPResponse> SetPIN(byte[] pinAuth,byte[] newPinEnc)
+        public async Task<CTAPResponse> SetPIN(List<hidparam> hidParams,byte[] pinAuth,byte[] newPinEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -114,14 +114,14 @@ namespace WebAuthnModokiDesktop
             // 0x05:newPinEnc
             cbor.Add(0x05, newPinEnc);
 
-            var resi = await sendCommandandResponse(0x06,cbor);
+            var resi = await sendCommandandResponse(hidParams,0x06, cbor);
 
             var response = new CTAPResponse(resi);
 
             return (response);
         }
 
-        public async Task<CTAPResponse> ChangePIN(byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
+        public async Task<CTAPResponse> ChangePIN(List<hidparam> hidParams,byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -152,14 +152,14 @@ namespace WebAuthnModokiDesktop
             // 0x06:pinHashEnc
             cbor.Add(0x06, pinHashEnc);
 
-            var resi = await sendCommandandResponse(0x06, cbor);
+            var resi = await sendCommandandResponse(hidParams,0x06, cbor);
 
             var response = new CTAPResponse(resi);
 
             return (response);
         }
 
-        public async Task<CTAPResponsePinToken> GetPINToken(byte[] pinHashEnc)
+        public async Task<CTAPResponsePinToken> GetPINToken(List<hidparam> hidParams, byte[] pinHashEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -184,7 +184,7 @@ namespace WebAuthnModokiDesktop
             // 0x06:
             cbor.Add(0x06, pinHashEnc);
 
-            var resi = await sendCommandandResponse(0x06, cbor);
+            var resi = await sendCommandandResponse(hidParams,0x06, cbor);
 
             var response = new CTAPResponsePinToken(resi);
 
