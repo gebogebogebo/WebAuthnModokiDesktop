@@ -4,12 +4,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAuthnModokiDesktop", "WebAuthnModokiDesktop\WebAuthnModokiDesktop.csproj", "{6AA1C90D-3D8F-42D6-A12D-8779F9B7A58D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C3CD0128-645B-437C-8AC9-AC4AF79A3D68} = {C3CD0128-645B-437C-8AC9-AC4AF79A3D68}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedSecret", "SharedSecret\SharedSecret.vcxproj", "{C3CD0128-645B-437C-8AC9-AC4AF79A3D68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testUI01", "testUI01\testUI01.csproj", "{ABEAD712-97EF-4302-8F9C-4929C080AB2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6AA1C90D-3D8F-42D6-A12D-8779F9B7A58D} = {6AA1C90D-3D8F-42D6-A12D-8779F9B7A58D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testUI03", "testUI03\testUI03.csproj", "{DAD07EA8-52B1-4621-8DC0-9A55E30FC637}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6AA1C90D-3D8F-42D6-A12D-8779F9B7A58D} = {6AA1C90D-3D8F-42D6-A12D-8779F9B7A58D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

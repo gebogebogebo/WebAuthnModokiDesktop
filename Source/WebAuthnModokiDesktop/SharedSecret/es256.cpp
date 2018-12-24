@@ -277,6 +277,13 @@ es256_pk_from_EC_KEY(es256_pk_t *pk, const EC_KEY *ec)
 		goto fail;
 	}
 
+	// log
+	log_str("%s: es256_pk", __func__);
+	log_str("x");
+	log_hex(pk->x, 32);
+	log_str("y");
+	log_hex(pk->y, 32);
+
 	ok = 0;
 fail:
 	if (ctx != NULL)

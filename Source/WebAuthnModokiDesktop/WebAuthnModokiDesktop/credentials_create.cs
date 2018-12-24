@@ -99,7 +99,7 @@ namespace WebAuthnModokiDesktop
                     Directory.CreateDirectory(path);
                 }
                 WebAuthnModokiDesktop.JsonUtility.SerializeFile(att, pathname);
-            } catch (Exception ex) {
+            } catch (Exception) {
                 return false;
             }
             return true;
@@ -109,7 +109,7 @@ namespace WebAuthnModokiDesktop
             CTAPResponseAttestation att;
             try {
                 att = WebAuthnModokiDesktop.JsonUtility.DeserializeFile<WebAuthnModokiDesktop.CTAPResponseAttestation>(pathname);
-            } catch (Exception ex) {
+            } catch (Exception) {
                 return null;
             }
             return att;

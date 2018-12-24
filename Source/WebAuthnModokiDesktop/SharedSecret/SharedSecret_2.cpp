@@ -1,14 +1,15 @@
 
 #include <openssl/evp.h>
 #include <openssl/sha.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
 
 #include "functions.h"
 #include "es256.h"
 
 // ここで生成した秘密鍵sk , 取得した公開鍵pk
 // ecdh = Shered Secret
-static int
-do_ecdh(
+int do_ecdh(
 		const es256_sk_t *sk,		// (I )ここで生成した秘密鍵
 		const es256_pk_t *pk,		// (I )Yubikeyから取得した公開鍵
 		bytebuffer_t **ecdh)			// ( O)生成したShered Secret
@@ -88,7 +89,7 @@ fail:
 	return (ok);
 }
 
-int fido_createSharedSecret(
+int createSharedSecret_inter(
 	es256_pk_t *public_key_aG,		// (I )Yubikeyから取得した公開鍵
 	es256_pk_t **public_key_bG,		// ( O)ここで生成した公開鍵(bG)
 	bytebuffer_t **shearedSecret		// ( O)Sheared Secret
@@ -153,4 +154,166 @@ fail:
 	}
 
 	return (r);
+}
+
+int verify_attsig_inter(
+	const bytebuffer_t *dgst,
+	const bytebuffer_t *x5c,
+	const bytebuffer_t *sig
+)
+{
+	BIO			*rawcert = NULL;
+	X509		*cert = NULL;
+	EVP_PKEY	*pkey = NULL;
+	EC_KEY		*ec;
+	int			ok = -1;
+
+	/* openssl needs ints */
+	if (dgst->len > INT_MAX || x5c->len > INT_MAX || sig->len > INT_MAX) {
+		log_str("%s: dgst->len=%zu, x5c->len=%zu, sig->len=%zu",
+			__func__, dgst->len, x5c->len, sig->len);
+		return (-2);
+	}
+
+	/* fetch key from x509 */
+	if ((rawcert = BIO_new_mem_buf(x5c->ptr, (int)x5c->len)) == NULL) {
+		return (-3);
+	}
+
+	// 証明書バイトストリームから証明書構造体の生成
+	if ((cert = d2i_X509_bio(rawcert, NULL)) == NULL) {
+		return (-4);
+	}
+
+	// 証明書情報から公開鍵を取り出す
+	if ((pkey = X509_get_pubkey(cert)) == NULL) {
+		return (-5);
+	}
+
+	// EC KEYに変換
+	if((ec = EVP_PKEY_get0_EC_KEY(pkey)) == NULL ) {
+		log_str("%s: x509 key", __func__);
+		return (-6);
+	}
+
+	// ログ
+	log_str("%s: x5c", __func__);
+	log_str("x5c(%d byte)", x5c->len);
+	log_hex(x5c->ptr, x5c->len);
+
+	log_str("dgst(%d byte)", dgst->len);
+	log_hex(dgst->ptr, dgst->len);
+
+	log_str("sig(%d byte)", sig->len);
+	log_hex(sig->ptr, sig->len);
+
+	// ECDSA
+	// dgst と sig を検証する（ecを使う）
+	// 1.dgstをx5cから取り出した公開鍵で暗号化する⇒署名
+	// 2.この署名とsigを比較
+	// openssl でできる
+	if (ECDSA_verify(0,
+		dgst->ptr, (int)dgst->len,
+		sig->ptr, (int)sig->len,
+		ec) != 1) {
+		log_str("%s: ECDSA_verify", __func__);
+		goto fail;
+	}
+	log_str("ECDSA_verify-Ok");
+
+	ok = 0;
+fail:
+	if (rawcert != NULL)
+		BIO_free(rawcert);
+	if (cert != NULL)
+		X509_free(cert);
+	if (pkey != NULL)
+		EVP_PKEY_free(pkey);
+
+	return (ok);
+}
+
+EC_KEY * read_ec_pem_pubkey(const char* pubkeyPem,int pubkeyPemLen)
+{
+	BIO			*biokey = NULL;
+	EVP_PKEY	*pkey = NULL;
+	EC_KEY		*ec = NULL;
+
+	// fetch string
+	if ((biokey = BIO_new_mem_buf((void*)pubkeyPem, pubkeyPemLen)) == NULL) {
+		log_str("%s: Error BIO_new_mem_buf", __func__);
+		goto fail;
+	}
+	log_str("%s: Ok BIO_new_mem_buf", __func__);
+
+	// read pem
+	if ((pkey = PEM_read_bio_PUBKEY(biokey, NULL, NULL, NULL)) == NULL) {
+		log_str("%s: Error PEM_read_bio_PUBKEY", __func__);
+		goto fail;
+	}
+	log_str("%s: Ok PEM_read_bio_PUBKEY", __func__);
+
+	// get EC_KEY
+	if ((ec = EVP_PKEY_get1_EC_KEY(pkey)) == NULL) {
+		log_str("%s: Error EVP_PKEY_get1_EC_KEY", __func__);
+		goto fail;
+	}
+	log_str("%s: Ok EVP_PKEY_get1_EC_KEY", __func__);
+
+fail:
+	if (biokey != NULL) {
+		BIO_free(biokey);
+	}
+
+	if (pkey!= NULL) {
+		EVP_PKEY_free(pkey);
+	}
+
+	return (ec);
+}
+
+int verify_assertion_sig_inter(
+				const bytebuffer_t*	dgst,
+				const es256_pk_t*	pk,
+				const bytebuffer_t*	sig
+				)
+{
+	EVP_PKEY	*pkey = NULL;
+	EC_KEY		*ec = NULL;
+	int			ok = -1;
+
+	/* ECDSA_verify needs ints */
+	if (dgst->len > INT_MAX || sig->len > INT_MAX) {
+		log_str("%s: dgst->len=%zu, sig->len=%zu", __func__,dgst->len, sig->len);
+		ok = -2;
+		goto fail;
+	}
+
+	if ((pkey = es256_pk_to_EVP_PKEY(pk)) == NULL) {
+		log_str("%s: pk -> ec", __func__);
+		ok = -3;
+		goto fail;
+	}
+
+	if ((ec = EVP_PKEY_get0_EC_KEY(pkey)) == NULL) {
+		log_str("%s: pk -> ec", __func__);
+		ok = -4;
+		goto fail;
+	}
+
+	// verify
+	if (ECDSA_verify(0, dgst->ptr, (int)dgst->len, sig->ptr,(int)sig->len, ec) != 1) {
+		ok = -4;
+		log_str("%s: ECDSA_verify", __func__);
+		goto fail;
+	}
+
+	log_str("%s: verify_assertion_sig_inter-ok", __func__);
+	ok = 0;
+
+fail:
+	if (pkey != NULL)
+		EVP_PKEY_free(pkey);
+
+	return (ok);
 }

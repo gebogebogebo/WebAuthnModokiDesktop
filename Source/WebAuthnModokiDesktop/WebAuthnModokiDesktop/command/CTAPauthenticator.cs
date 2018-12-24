@@ -99,7 +99,7 @@ namespace WebAuthnModokiDesktop
                     }
                 }
 
-            } catch (Exception ex) {
+            } catch (Exception) {
 
             } finally {
                 if (hidDevice != null) {

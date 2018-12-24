@@ -25,6 +25,8 @@ namespace WebAuthnModokiDesktop
         public string User_Name { get; set; }
         public string User_DisplayName { get; set; }
 
+        public byte[] AuthData { get; set; }
+
         public CTAPResponseAssertion(CTAPauthenticator.CTAPResponseInner resi) : base(resi)
         {
             SignCount = 0;
@@ -89,6 +91,7 @@ namespace WebAuthnModokiDesktop
             Aaguid = data.Skip(index).Take(16).ToArray();
             index = index + 16;
 
+            AuthData = data;
         }
 
         private void parsePublicKeyCredentialUserEntity(CBORObject cbor)

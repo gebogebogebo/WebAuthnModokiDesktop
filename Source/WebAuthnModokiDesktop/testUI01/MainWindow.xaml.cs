@@ -4,15 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
 
 namespace testUI01
 {
@@ -130,13 +121,28 @@ namespace testUI01
             var ret = await WebAuthnModokiDesktop.credentials.create(hidParams, json, pin);
             setResponse(ret);
 
-            // Export_File
             if (ret.isSuccess == true) {
-                WebAuthnModokiDesktop.credentials.serializeAttestationToFile(ret.attestation, string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                // Verify
+                if( WebAuthnModokiDesktop.CTAPVerify.Verify(ret) ) {
+                    log("Verify - OK!");
+
+                    // Export_File
+                    WebAuthnModokiDesktop.credentials.serializeAttestationToFile(ret.attestation, string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+
+                    // Certificate
+                    var certpem = WebAuthnModokiDesktop.CTAPVerify.ConvertCertificateDERtoPEM(ret.attestation.AttStmtX5c);
+                    System.IO.File.WriteAllText(string.Format($".\\credentials\\credential_{rpid}_attestation_cert.pem"), certpem);
+
+                    // PublicKey
+                    var pubkeypem = WebAuthnModokiDesktop.CTAPVerify.ConvertCOSEtoPEM(ret.attestation.CredentialPublicKeyByte);
+                    System.IO.File.WriteAllText(string.Format($".\\credentials\\credential_{rpid}_pubkey.pem"), pubkeypem);
+
+                } else {
+                    log("Error --- Verify - NG!");
+                }
             }
 
             log("【MakeCredential - End】");
-
         }
 
         private async void button3_Click(object sender, RoutedEventArgs e)
@@ -150,15 +156,15 @@ namespace testUI01
                 pin = "";
             }
 
+            var att = WebAuthnModokiDesktop.credentials.deSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+            if (att == null) {
+                log("Error deSerializeAttestationFromFile");
+                return;
+            }
+
             // credential-id
             var credentialid = new byte[0];
             if ((bool)checkGetAssertionCredentialId.IsChecked) {
-                var att = WebAuthnModokiDesktop.credentials.deSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
-                if (att == null) {
-                    log("Error deSerializeAttestationFromFile");
-                    return;
-                }
-
                 credentialid = att.CredentialId;
             }
 
@@ -188,6 +194,15 @@ namespace testUI01
             var ret = await WebAuthnModokiDesktop.credentials.get(hidParams, json, pin);
             setResponse(ret);
 
+            if (ret.isSuccess == true) {
+                // Verify - check index=0 only
+                if (WebAuthnModokiDesktop.CTAPVerify.Verify(ret, att.CredentialPublicKeyByte,0)) {
+                    log("Verify - OK!");
+                } else {
+                    log("Error --- Verify - NG!");
+                }
+            }
+
             log("【GetAssertion - End】");
         }
 
@@ -200,25 +215,9 @@ namespace testUI01
             log("◆◆◆【setpin - END】");
         }
 
-        private async void button5_Click(object sender, RoutedEventArgs e)
+        private void button5_Click(object sender, RoutedEventArgs e)
         {
-            // 認証
-            byte[] challenge = System.Text.Encoding.ASCII.GetBytes("this is challenge");
-            string uv = "discouraged";
-
-            string json =
-               "{" +
-                    string.Format($"timeout : 60000,") +
-                    string.Format($"challenge:[{string.Join(",", challenge)}],") +
-                    string.Format($"rpId : 'demo.WebauthnMODOKI.gebogebo.com',") +
-                   string.Format($"requireUserPresence : 'true',") +
-                   string.Format($"userVerification : '{uv}',") +
-                "}";
-
-            var response = await WebAuthnModokiDesktop.credentials.get(hidParams, json, "1234");
-            if (response.isSuccess == true) {
-
-            }
+            log("◆◆◆【no function】");
         }
     }
 

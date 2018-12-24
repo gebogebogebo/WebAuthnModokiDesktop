@@ -74,6 +74,7 @@ namespace testUI02
         }
 
         byte[] CredentialId = null;
+        byte[] CredentialPublicKeyByte = null;
         private async void buttonRegister_Click(object sender, RoutedEventArgs e)
         {
             labelRegisterResult.Content = "";
@@ -129,7 +130,22 @@ namespace testUI02
             logResponse(response);
 
             if( response.isSuccess == true) {
+                if( checkRegisterVerify.IsChecked == true) {
+                    if (WebAuthnModokiDesktop.CTAPVerify.Verify(response) == false) {
+                        log("---");
+                        log("Registration Verify failed!");
+                        log("---");
+                        textLoginUserName.Text = "";
+                        labelRegisterResult.Content = "Verify failed!";
+                        return;
+                    }
+                    log("---");
+                    log("Registration Verify ok!");
+                    log("---");
+                }
+
                 CredentialId = response.attestation.CredentialId;
+                CredentialPublicKeyByte = response.attestation.CredentialPublicKeyByte;
             }
             log("<Register-END>");
         }
@@ -174,6 +190,20 @@ namespace testUI02
                 log("Authentication successful!");
                 log("---");
                 labeLoginResult.Content = "successful!";
+
+                if (checkLoginVerify.IsChecked == true) {
+                    if (WebAuthnModokiDesktop.CTAPVerify.Verify(response,this.CredentialPublicKeyByte) == false) {
+                        log("---");
+                        log("Authentication Verify failed!");
+                        log("---");
+                        labeLoginResult.Content = "Verify failed!";
+                        return;
+                    }
+                    log("---");
+                    log("Authentication Verify ok!");
+                    log("---");
+                }
+
             } else {
                 log("---");
                 log("Authentication failed!");

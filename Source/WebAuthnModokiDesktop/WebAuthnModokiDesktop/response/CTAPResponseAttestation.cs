@@ -34,6 +34,12 @@ namespace WebAuthnModokiDesktop
         [DataMember()]
         public string CredentialPublicKey { get; set; }
 
+        [DataMember()]
+        public byte[] CredentialPublicKeyByte { get; set; }
+
+        [DataMember()]
+        public byte[] AuthData { get; set; }
+
         public int AttStmtAlg { get; set; }
         public byte[] AttStmtSig { get; set; }
         public byte[] AttStmtX5c { get; set; }
@@ -101,12 +107,13 @@ namespace WebAuthnModokiDesktop
 
             // credentialPublicKey
             {
-                var credentialPublicKeyByte = data.Skip(index).ToArray();
-                var credentialPublicKeyCobr = CBORObject.DecodeFromBytes(credentialPublicKeyByte, CBOREncodeOptions.Default);
+                CredentialPublicKeyByte = data.Skip(index).ToArray();
+                var credentialPublicKeyCobr = CBORObject.DecodeFromBytes(CredentialPublicKeyByte, CBOREncodeOptions.Default);
                 CredentialPublicKey = credentialPublicKeyCobr.ToJSONString();
                 Console.WriteLine("credentialPublicKeyCobr:" + CredentialPublicKey);
             }
 
+            AuthData = data;
         }
 
         private void parseAttstmt(CBORObject attestationStatementCbor)
