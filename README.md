@@ -1,13 +1,13 @@
 # WebAuthnModokiDesktop
 ====
 
-WebauthnっぽいことをするC#ライブラリ
-C# Library that does things like Webauthn
+WebAuthnっぽいことをするC#ライブラリ
+C# Library that does things like WebAuthn
 
 ## Description
 - FIDO2 Authenticator CTAP2 HID , Yubikey , FEITIAN BioPass FIDO2
 - WebAuthnModokiDesktop.credentials.create()
-- CWebAuthnModokiDesktop.credentials.get()
+- WebAuthnModokiDesktop.credentials.get()
 
 - for Windows
   - Windows10 1803(64bit)
