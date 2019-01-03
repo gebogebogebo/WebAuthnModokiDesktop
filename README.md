@@ -15,7 +15,7 @@ C# Library that does things like WebAuthn
   - C# Desktop Applicaion
   - .Net Framework 4.6.1
 
-- Check [here](https://qiita.com/gebo/items/f6d3024f7e164ac0a195) for details
+- Read [Qiita](https://qiita.com/gebo/items/f6d3024f7e164ac0a195) for details
   
 ## Licence
 MIT Licence
