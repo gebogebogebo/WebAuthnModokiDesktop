@@ -20,19 +20,19 @@ namespace testUI03
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<WebAuthnModokiDesktop.hidparam> hidParams;
+        private WebAuthnModokiDesktop.devparam devParam;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            hidParams = WebAuthnModokiDesktop.hidparam.getDefaultParams();
+            devParam = WebAuthnModokiDesktop.devparam.getDefaultParams();
         }
 
         private async void buttonSetPIN_Click(object sender, RoutedEventArgs e)
         {
             string newpin = textNewPINSet.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.setpin(hidParams,newpin);
+            var ret = await WebAuthnModokiDesktop.credentials.setpin(devParam, newpin);
             if (ret.isSuccess == true) {
                 textStatusSet.Text = "Success! " + ret.msg;
             } else {
@@ -44,7 +44,7 @@ namespace testUI03
         {
             string newpin = textNewPIN.Text;
             string currentpin = textCurrentPIN.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.changepin(hidParams,newpin, currentpin);
+            var ret = await WebAuthnModokiDesktop.credentials.changepin(devParam, newpin, currentpin);
             if (ret.isSuccess == true) {
                 textStatus.Text = "Success! " + ret.msg;
             } else {
@@ -54,11 +54,12 @@ namespace testUI03
 
         private async void buttonInfo_Click(object sender, RoutedEventArgs e)
         {
-            var ret = await WebAuthnModokiDesktop.credentials.info(WebAuthnModokiDesktop.hidparam.getDefaultParams());
+            var ret = await WebAuthnModokiDesktop.credentials.info(devParam);
             var msg = ""; 
             msg = msg + string.Format($"isSuccess={ret.isSuccess}") + "\r\n";
             msg = msg + string.Format($"msg={ret.msg}") + "\r\n";
             msg = msg + string.Format($"HidInfo={ret.HidInfo}") + "\r\n";
+            msg = msg + string.Format($"NFcInfo={ret.NfcInfo}") + "\r\n";
             msg = msg + string.Format($"PIN Retry Count={ret.PinRetryCount}") + "\r\n";
 
             if( ret.AuthenticatorInfo != null) {

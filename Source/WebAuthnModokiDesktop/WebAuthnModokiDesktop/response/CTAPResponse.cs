@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using PeterO.Cbor;
 using System.Runtime.Serialization;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     [DataContract]
     public class CTAPResponse

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PeterO.Cbor;
-using System.Security.Cryptography;
 using System.Runtime.Serialization;
+using WebAuthnModokiDesktop;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     [DataContract]
     internal class CTAPauthenticatorMakeCredential : CTAPauthenticator
@@ -33,7 +33,7 @@ namespace WebAuthnModokiDesktop
 
         public byte[] ClientDataHash { get; set; }
 
-        public async Task<CTAPResponseAttestation> SendAndResponse(List<hidparam> hidParams)
+        public async Task<CTAPResponseAttestation> SendAndResponse(devparam devParam)
         {
             // check
             {
@@ -86,7 +86,7 @@ namespace WebAuthnModokiDesktop
                 cbor.Add(0x09, 1);
             }
 
-            var resi = await sendCommandandResponse(hidParams,0x01, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x01, cbor);
 
             var response = new CTAPResponseAttestation(resi);
             response.CommandDataJson = this.payloadJson;

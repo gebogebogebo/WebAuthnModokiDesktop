@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     public class Common
     {

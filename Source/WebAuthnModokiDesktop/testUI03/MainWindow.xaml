@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:testUI03"
         mc:Ignorable="d"
-        Title="PIN Setting" Height="520.362" Width="504.596">
+        Title="PIN Setting" Height="575.095" Width="504.596">
     <Grid>
         <GroupBox Header="Set New PIN" HorizontalAlignment="Left" Height="199" Margin="10,39,0,0" VerticalAlignment="Top" Width="234">
             <Grid>
@@ -26,13 +26,13 @@
                 <TextBox x:Name="textStatus" HorizontalAlignment="Left" Height="67" Margin="10,98,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="206"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Info" HorizontalAlignment="Left" Height="236" Margin="10,243,0,0" VerticalAlignment="Top" Width="475">
+        <GroupBox Header="Info" HorizontalAlignment="Left" Height="293" Margin="10,243,0,0" VerticalAlignment="Top" Width="475">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="15*"/>
                     <ColumnDefinition Width="448*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="textStatusInfo" HorizontalAlignment="Left" Height="179" Margin="10,25,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="437" Grid.ColumnSpan="2"/>
+                <TextBox x:Name="textStatusInfo" HorizontalAlignment="Left" Height="235" Margin="10,25,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="437" Grid.ColumnSpan="2"/>
                 <Button x:Name="buttonInfo" Content="Info" HorizontalAlignment="Left" Margin="356.541,0,0,0" VerticalAlignment="Top" Width="75" Click="buttonInfo_Click" Grid.Column="1"/>
             </Grid>
         </GroupBox>

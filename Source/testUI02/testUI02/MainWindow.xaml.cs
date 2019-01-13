@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using gebo.CTAP2;
 
 namespace testUI02
 {
@@ -12,12 +13,12 @@ namespace testUI02
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<WebAuthnModokiDesktop.hidparam> hidParams;
+        private WebAuthnModokiDesktop.devparam devParams;
 
         public MainWindow()
         {
             InitializeComponent();
-            hidParams = WebAuthnModokiDesktop.hidparam.getDefaultParams();
+            devParams = WebAuthnModokiDesktop.devparam.getDefaultParams();
         }
 
         private void logResponse(WebAuthnModokiDesktop.commandstatus res)
@@ -29,7 +30,7 @@ namespace testUI02
                 logResponse(cmd.cmd, cmd.res);
             }
         }
-        private void logResponse(WebAuthnModokiDesktop.CTAPauthenticator ctap, WebAuthnModokiDesktop.CTAPResponse res)
+        private void logResponse(CTAPauthenticator ctap, CTAPResponse res)
         {
             string msg = "<Command>\r\n" + ctap.payloadJson + "\r\n\r\n";
 
@@ -38,8 +39,8 @@ namespace testUI02
             msg = msg + res.ResponseDataJson + "\r\n";
             log(msg);
 
-            if (res.GetType() == typeof(WebAuthnModokiDesktop.CTAPResponseAssertion)) {
-                var ret = (WebAuthnModokiDesktop.CTAPResponseAssertion)res;
+            if (res.GetType() == typeof(CTAPResponseAssertion)) {
+                var ret = (CTAPResponseAssertion)res;
                 log(string.Format($"User_Id={Encoding.ASCII.GetString(ret.User_Id)}"));
                 log(string.Format($"User_Name={ret.User_Name}"));
                 log(string.Format($"User_DisplayName={ret.User_DisplayName}"));
@@ -63,10 +64,10 @@ namespace testUI02
         {
             log("");
             log("<Info>");
-            var response = await WebAuthnModokiDesktop.credentials.info(hidParams);
+            var response = await WebAuthnModokiDesktop.credentials.info(devParams);
             logResponse(response);
             if( response.isSuccess == true) {
-                MessageBox.Show("Success!\r\n\r\n" + response.HidInfo);
+                MessageBox.Show("Success!\r\n\r\nHID=" + response.HidInfo+"\r\nNFC=" + response.NfcInfo);
             } else {
                 MessageBox.Show("Failed!");
             }
@@ -113,7 +114,7 @@ namespace testUI02
                     "}," +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
-            var response = await WebAuthnModokiDesktop.credentials.create(hidParams,json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.create(devParams, json, pin);
             if (response.isSuccess == true) {
                 log("---");
                 log("Registration successful!");
@@ -183,7 +184,7 @@ namespace testUI02
                     string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(hidParams,json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.get(devParams, json, pin);
 
             if(response.isSuccess == true) {
                 log("---");
@@ -240,7 +241,7 @@ namespace testUI02
                    string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(hidParams,json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.get(devParams, json, pin);
 
             if (response.isSuccess == true) {
                 log("---");

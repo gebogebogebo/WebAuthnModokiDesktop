@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using System.IO;
+using gebo.CTAP2;
 
 namespace WebAuthnModokiDesktop
 {
@@ -15,19 +16,19 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<createcommandstatus> create(List<hidparam> hidParams, string publickeyJson,string pin="")
+        public static async Task<createcommandstatus> create(devparam devParam, string publickeyJson,string pin="")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforCreate>(publickeyJson);
                 publickey.pin = pin;
-                return (await create(hidParams,publickey));
+                return (await create(devParam, publickey));
             } catch (Exception ex) {
                 var status = new createcommandstatus();
                 status.msg = ex.Message.ToString();
                 return (status);
             }
         }
-        public static async Task<createcommandstatus> create(List<hidparam> hidParams,PublicKeyforCreate publickey)
+        public static async Task<createcommandstatus> create(devparam devParam, PublicKeyforCreate publickey)
         {
             var status = new createcommandstatus();
 
@@ -57,7 +58,7 @@ namespace WebAuthnModokiDesktop
 
                     var ctap2 = new CTAPauthenticatorClientPIN();
 
-                    var st1 = await ctap2.GetKeyAgreement(hidParams);
+                    var st1 = await ctap2.GetKeyAgreement(devParam);
                     status.commands.Add(new commandstatus.commandinfo(ctap2, st1));
                     if (st1.Status != 0x00) {
                         throw (new Exception("GetKeyAgreement"));
@@ -67,7 +68,7 @@ namespace WebAuthnModokiDesktop
 
                     var pinHashEnc = ctap2.createPinHashEnc(pin, sharedSecret);
 
-                    var token = await ctap2.GetPINToken(hidParams,pinHashEnc);
+                    var token = await ctap2.GetPINToken(devParam, pinHashEnc);
                     status.commands.Add(new commandstatus.commandinfo(ctap2, token));
                     if (token.Status != 0x00) {
                         throw (new Exception("GetPINToken"));
@@ -76,7 +77,7 @@ namespace WebAuthnModokiDesktop
                     ctap.PinAuth = ctap2.createPinAuth(sharedSecret, ctap.ClientDataHash, token.PinTokenEnc);
                 }
 
-                var att = await ctap.SendAndResponse(hidParams);
+                var att = await ctap.SendAndResponse(devParam);
                 status.commands.Add(new commandstatus.commandinfo(ctap, att));
                 if (att.Status != 0x00) {
                     throw (new Exception("MakeCredential"));
@@ -98,7 +99,7 @@ namespace WebAuthnModokiDesktop
                 if (Directory.Exists(path) == false) {
                     Directory.CreateDirectory(path);
                 }
-                WebAuthnModokiDesktop.JsonUtility.SerializeFile(att, pathname);
+                JsonUtility.SerializeFile(att, pathname);
             } catch (Exception) {
                 return false;
             }
@@ -108,7 +109,7 @@ namespace WebAuthnModokiDesktop
         {
             CTAPResponseAttestation att;
             try {
-                att = WebAuthnModokiDesktop.JsonUtility.DeserializeFile<WebAuthnModokiDesktop.CTAPResponseAttestation>(pathname);
+                att = JsonUtility.DeserializeFile<CTAPResponseAttestation>(pathname);
             } catch (Exception) {
                 return null;
             }

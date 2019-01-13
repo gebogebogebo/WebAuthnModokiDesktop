@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PeterO.Cbor;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     public class CTAPResponseAssertion : CTAPResponse
     {

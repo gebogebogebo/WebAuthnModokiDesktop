@@ -42,12 +42,19 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="Numbers, Version=1.1.2.0, Culture=neutral, PublicKeyToken=9cd62db60ea5554c, processorArchitecture=MSIL">
       <HintPath>..\packages\PeterO.Numbers.1.1.2\lib\net40\Numbers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -69,6 +76,15 @@
     <Compile Include="command\CTAPHID.cs" />
     <Compile Include="credentials_info.cs" />
     <Compile Include="CTAPVerify.cs" />
+    <Compile Include="devparam.cs" />
+    <Compile Include="NFC\APDUresponse.cs" />
+    <Compile Include="NFC\APDUstatus.cs" />
+    <Compile Include="NFC\ChangeEndian.cs" />
+    <Compile Include="NFC\CTAPNFC.cs" />
+    <Compile Include="NFC\ICReader.cs" />
+    <Compile Include="NFC\SCard\SCardAPI.cs" />
+    <Compile Include="NFC\SCard\SCardIORequest.cs" />
+    <Compile Include="NFC\SCard\SCardResult.cs" />
     <Compile Include="response\CTAPResponse.cs" />
     <Compile Include="response\CTAPResponseAssertion.cs" />
     <Compile Include="response\CTAPResponseAttestation.cs" />
@@ -79,6 +95,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

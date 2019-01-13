@@ -12,16 +12,16 @@ namespace testUI01
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<WebAuthnModokiDesktop.hidparam> hidParams;
+        private WebAuthnModokiDesktop.devparam devParam;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            hidParams = WebAuthnModokiDesktop.hidparam.getDefaultParams();
+            devParam = WebAuthnModokiDesktop.devparam.getDefaultParams();
         }
 
-        private void setResponse(WebAuthnModokiDesktop.CTAPauthenticator ctap, WebAuthnModokiDesktop.CTAPResponse res)
+        private void setResponse(gebo.CTAP2.CTAPauthenticator ctap, gebo.CTAP2.CTAPResponse res)
         {
             string msg = "<Command>\r\n" + ctap.payloadJson + "\r\n\r\n";
 
@@ -30,8 +30,8 @@ namespace testUI01
             msg = msg + res.ResponseDataJson + "\r\n";
             textBox.Text = textBox.Text + msg + "\r\n";
 
-            if (res.GetType() == typeof(WebAuthnModokiDesktop.CTAPResponseAssertion)) {
-                var ret = (WebAuthnModokiDesktop.CTAPResponseAssertion)res;
+            if (res.GetType() == typeof(gebo.CTAP2.CTAPResponseAssertion)) {
+                var ret = (gebo.CTAP2.CTAPResponseAssertion)res;
                 log(string.Format($"User_Id={Encoding.ASCII.GetString(ret.User_Id)}"));
                 log(string.Format($"User_Name={ret.User_Name}"));
                 log(string.Format($"User_DisplayName={ret.User_DisplayName}"));
@@ -60,16 +60,16 @@ namespace testUI01
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            log("◆◆◆【test - Start】");
-            var ret = WebAuthnModokiDesktop.credentials.hidcheck(hidParams);
+            log("◆◆◆【HID Test - Start】");
+            var ret = WebAuthnModokiDesktop.credentials.hidcheck(devParam.hidparams);
             setResponse(ret);
-            log("◆◆◆【test - END】");
+            log("◆◆◆【HID Test - END】");
         }
 
         private async void button1_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【info - Start】");
-            var ret = await WebAuthnModokiDesktop.credentials.info(hidParams);
+            var ret = await WebAuthnModokiDesktop.credentials.info(devParam);
             setResponse(ret);
             log("◆◆◆【info - END】");
         }
@@ -118,7 +118,7 @@ namespace testUI01
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.create(hidParams, json, pin);
+            var ret = await WebAuthnModokiDesktop.credentials.create(devParam, json, pin);
             setResponse(ret);
 
             if (ret.isSuccess == true) {
@@ -191,7 +191,7 @@ namespace testUI01
                    string.Format($"userVerification : '{userVerification}',") +
                 "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.get(hidParams, json, pin);
+            var ret = await WebAuthnModokiDesktop.credentials.get(devParam, json, pin);
             setResponse(ret);
 
             if (ret.isSuccess == true) {
@@ -210,7 +210,7 @@ namespace testUI01
         {
             log("◆◆◆【setpin - Start】");
             string pin = textBoxPIN.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.setpin(hidParams, pin);
+            var ret = await WebAuthnModokiDesktop.credentials.setpin(devParam, pin);
             setResponse(ret);
             log("◆◆◆【setpin - END】");
         }
@@ -218,6 +218,15 @@ namespace testUI01
         private void button5_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【no function】");
+        }
+
+        private void buttonNFC_Click(object sender, RoutedEventArgs e)
+        {
+            log("◆◆◆【NFC Test - Start】");
+            var ret = WebAuthnModokiDesktop.credentials.nfccheck(devParam.nfcparams);
+            setResponse(ret);
+            log("◆◆◆【NFC Test - END】");
+
         }
     }
 

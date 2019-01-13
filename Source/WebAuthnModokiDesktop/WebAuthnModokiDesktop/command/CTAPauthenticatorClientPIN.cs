@@ -7,8 +7,9 @@ using PeterO.Cbor;
 using System.Security.Cryptography;
 
 using System.Runtime.InteropServices;       // dll
+using WebAuthnModokiDesktop;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     internal class CTAPauthenticatorClientPIN : CTAPauthenticator
     {
@@ -20,7 +21,7 @@ namespace WebAuthnModokiDesktop
         static extern int Aes256cbc_Dec(string key, string inbuf, StringBuilder outbuf);
 
         public int RetryCount { get; private set; }
-        public async Task<CTAPResponse> GetRetries(List<hidparam> hidParams)
+        public async Task<CTAPResponse> GetRetries(devparam devParam)
         {
             var response = new CTAPResponse();
 
@@ -32,10 +33,7 @@ namespace WebAuthnModokiDesktop
             // 0x02:subCommand = 0x01:getRetries
             cbor.Add(0x02, 0x01);
 
-            var payload = cbor.EncodeToBytes();
-            var send = new byte[] { 0x06 }.Concat(payload).ToArray();
-            var resi = await sendCommandandResponse(hidParams,send);
-
+            var resi = await sendCommandandResponse(devParam, 0x06, cbor);
             if (resi.ResponseDataCbor != null) {
                 foreach (var key in resi.ResponseDataCbor.Keys) {
                     var keyVal = key.AsByte();
@@ -49,7 +47,6 @@ namespace WebAuthnModokiDesktop
                 Console.WriteLine(json);
                 response.ResponseDataJson = json;
             }
-
             response.Status = resi.Status;
 
             return (response);
@@ -58,7 +55,7 @@ namespace WebAuthnModokiDesktop
         public KeyAgreement Authenticator_KeyAgreement { get; private set; }
         public KeyAgreement My_KeyAgreement { get; private set; }
 
-        public async Task<CTAPResponse> GetKeyAgreement(List<hidparam> hidParams)
+        public async Task<CTAPResponse> GetKeyAgreement(devparam devParam)
         {
             var response = new CTAPResponse();
 
@@ -71,7 +68,7 @@ namespace WebAuthnModokiDesktop
             cbor.Add(0x02, 0x02);
 
             {
-                var resi = await sendCommandandResponse(hidParams,0x06, cbor);
+                var resi = await sendCommandandResponse(devParam, 0x06, cbor);
 
                 if (resi.ResponseDataCbor != null) {
                     var json = resi.ResponseDataCbor.ToJSONString();
@@ -86,7 +83,7 @@ namespace WebAuthnModokiDesktop
             return (response);
         }
 
-        public async Task<CTAPResponse> SetPIN(List<hidparam> hidParams,byte[] pinAuth,byte[] newPinEnc)
+        public async Task<CTAPResponse> SetPIN(devparam devParam, byte[] pinAuth,byte[] newPinEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -114,14 +111,14 @@ namespace WebAuthnModokiDesktop
             // 0x05:newPinEnc
             cbor.Add(0x05, newPinEnc);
 
-            var resi = await sendCommandandResponse(hidParams,0x06, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x06, cbor);
 
             var response = new CTAPResponse(resi);
 
             return (response);
         }
 
-        public async Task<CTAPResponse> ChangePIN(List<hidparam> hidParams,byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
+        public async Task<CTAPResponse> ChangePIN(devparam devParam, byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -152,14 +149,14 @@ namespace WebAuthnModokiDesktop
             // 0x06:pinHashEnc
             cbor.Add(0x06, pinHashEnc);
 
-            var resi = await sendCommandandResponse(hidParams,0x06, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x06, cbor);
 
             var response = new CTAPResponse(resi);
 
             return (response);
         }
 
-        public async Task<CTAPResponsePinToken> GetPINToken(List<hidparam> hidParams, byte[] pinHashEnc)
+        public async Task<CTAPResponsePinToken> GetPINToken(devparam devParam, byte[] pinHashEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -184,7 +181,7 @@ namespace WebAuthnModokiDesktop
             // 0x06:
             cbor.Add(0x06, pinHashEnc);
 
-            var resi = await sendCommandandResponse(hidParams,0x06, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x06, cbor);
 
             var response = new CTAPResponsePinToken(resi);
 

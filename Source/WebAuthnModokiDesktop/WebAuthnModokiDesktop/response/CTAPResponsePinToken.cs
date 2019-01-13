@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using PeterO.Cbor;
 using System.Runtime.InteropServices;       // dll
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     internal class CTAPResponsePinToken : CTAPResponse
     {

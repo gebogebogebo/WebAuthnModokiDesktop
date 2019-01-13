@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PeterO.Cbor;
-using System.Security.Cryptography;
 using System.Runtime.Serialization;
+using WebAuthnModokiDesktop;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     internal class CTAPauthenticatorGetAssertion : CTAPauthenticator
     {
@@ -25,7 +24,7 @@ namespace WebAuthnModokiDesktop
 
         public byte[] ClientDataHash { get; set; }
 
-        public async Task<CTAPResponseAssertion> SendAndResponse(List<hidparam> hidParams)
+        public async Task<CTAPResponseAssertion> SendAndResponse(devparam devParam)
         {
             // check
             {
@@ -64,7 +63,7 @@ namespace WebAuthnModokiDesktop
                 cbor.Add(0x07, 1);
             }
 
-            var resi = await sendCommandandResponse(hidParams,0x02, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x02, cbor);
 
             var response = new CTAPResponseAssertion(resi);
             response.CommandDataJson = this.payloadJson;

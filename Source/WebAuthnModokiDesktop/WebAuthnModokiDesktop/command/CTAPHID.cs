@@ -5,9 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using HidLibrary;
 
-namespace u2fhost
+namespace gebo.CTAP2
 {
-	public class CTAPHID : IDisposable
+    public class HidParam
+    {
+        public int VendorId { get; set; }
+        public int ProductId { get; set; }
+        public HidParam(int vendorId, int productId)
+        {
+            this.VendorId = vendorId;
+            this.ProductId = productId;
+        }
+        public HidParam(int vendorId)
+        {
+            this.VendorId = vendorId;
+            this.ProductId = 0x00;
+        }
+    }
+
+    internal class CTAPHID : IDisposable
 	{
 		private const byte CTAP_FRAME_INIT = 0x80;
 		private const int CTAP_RPT_SIZE = 64;
@@ -202,5 +218,50 @@ namespace u2fhost
 		{
 			hidDevice.CloseDevice();
 		}
-	}
+
+        public static async Task<byte[]> SendCommandandResponse(List<HidParam> hidParams, byte[] send)
+        {
+            byte[] res = null;
+
+            IHidDevice hidDevice = null;
+            try {
+                hidDevice = CTAPHID.find(hidParams);
+                if (hidDevice == null) {
+                    return null;
+                }
+                using (var openedDevice = await CTAPHID.OpenAsync(hidDevice)) {
+                    res = await openedDevice.CborAsync(send);
+                }
+
+            } catch (Exception) {
+
+            } finally {
+                if (hidDevice != null) {
+                    hidDevice.Dispose();
+                }
+            }
+            return (res);
+        }
+
+        public static HidDevice find(List<HidParam> hidparams)
+        {
+            HidDevice device = null;
+            foreach (var hidparam in hidparams) {
+                if (hidparam.ProductId == 0x00) {
+                    device = HidDevices.Enumerate(hidparam.VendorId).FirstOrDefault();
+                    if (device != null) {
+                        break;
+                    }
+                } else {
+                    device = HidDevices.Enumerate(hidparam.VendorId, hidparam.ProductId).FirstOrDefault();
+                    if (device != null) {
+                        break;
+                    }
+                }
+            }
+            return (device);
+        }
+
+
+    }
 }

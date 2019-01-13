@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
     internal class CTAPResponseStatusMessage
     {
