@@ -4,11 +4,12 @@ title <size:18>Module</size>
 component userApl.exe as userApl <<C#>>
 component WebAuthnModokiDesktop.dll as WebAuthnModokiDesktop <<C#>>
 component SharedSecret.dll as SharedSecret <<C++>>
-component crypto_43.dll as crypto <<openssl-2.7.4>>
-component CBOR.dll as CBOR <<PeterO.Cbor.3.4.0>>
-component Numbers.dll as Numbers <<PeterO.Numbers.1.1.2>>
-component HidLibrary.dll as HidLibrary <<hidlibrary.3.2.46.0>>
-component Newtonsoft.Json.dll as Newtonsoft.Json <<Newtonsoft.Json.12.0.1>>
+component crypto_43.dll as crypto <<openssl 2.7.4>>
+component CBOR.dll as CBOR <<PeterO.Cbor 3.4.0>>
+component Numbers.dll as Numbers <<PeterO.Numbers 1.1.2>>
+component HidLibrary.dll as HidLibrary <<hidlibrary 3.2.46.0>>
+component Newtonsoft.Json.dll as Newtonsoft.Json <<Newtonsoft.Json 12.0.1>>
+component NLog.dll as NLog <<NLog 4.5.11>>
 
 userApl ..> WebAuthnModokiDesktop
 WebAuthnModokiDesktop ..> SharedSecret
@@ -17,5 +18,6 @@ WebAuthnModokiDesktop ..> CBOR
 CBOR ..> Numbers
 WebAuthnModokiDesktop ..> Newtonsoft.Json
 SharedSecret ..> crypto
+WebAuthnModokiDesktop ..> NLog
 
 @enduml
