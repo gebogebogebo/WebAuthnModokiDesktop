@@ -55,7 +55,7 @@ namespace WebAuthnModokiDesktop
             try {
                 device = CTAPHID.find(hidParams);
                 if (device == null) {
-                    return (status);
+                    throw (new Exception("HID Device Not Found"));
                 }
                 device.ReadManufacturer(out byte[] manufacturerRaw);
                 device.ReadProduct(out byte[] productRaw);
@@ -86,6 +86,9 @@ namespace WebAuthnModokiDesktop
 
                 using (var reader = new gebo.NFC.ICReader(CTAPNFC.ToStringList(nfcParams) )) {
                     var readername = reader.GetLinkedReaderName();
+                    if (string.IsNullOrEmpty(readername)){
+                        throw (new Exception("Reader Not Found"));
+                    }
                     status.msg = status.msg + string.Format($"Reader : {readername}");
                 }
 
@@ -112,7 +115,7 @@ namespace WebAuthnModokiDesktop
         }
 
 
-        public static async Task<commandstatus> setpin(devparam devParam, string newpin)
+        public static async Task<commandstatus> setpin(DevParam devParam, string newpin)
         {
             var status = new commandstatus();
             try {
@@ -144,7 +147,7 @@ namespace WebAuthnModokiDesktop
             return status;
         }
 
-        public static async Task<commandstatus> changepin(devparam devParam, string newpin, string currentpin)
+        public static async Task<commandstatus> changepin(DevParam devParam, string newpin, string currentpin)
         {
             var status = new commandstatus();
 

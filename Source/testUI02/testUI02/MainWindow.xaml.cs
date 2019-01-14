@@ -13,12 +13,12 @@ namespace testUI02
     /// </summary>
     public partial class MainWindow : Window
     {
-        private WebAuthnModokiDesktop.devparam devParams;
+        private DevParam devParam;
 
         public MainWindow()
         {
             InitializeComponent();
-            devParams = WebAuthnModokiDesktop.devparam.getDefaultParams();
+            devParam = DevParam.getDefaultParams();
         }
 
         private void logResponse(WebAuthnModokiDesktop.commandstatus res)
@@ -64,7 +64,7 @@ namespace testUI02
         {
             log("");
             log("<Info>");
-            var response = await WebAuthnModokiDesktop.credentials.info(devParams);
+            var response = await WebAuthnModokiDesktop.credentials.info(devParam);
             logResponse(response);
             if( response.isSuccess == true) {
                 MessageBox.Show("Success!\r\n\r\nHID=" + response.HidInfo+"\r\nNFC=" + response.NfcInfo);
@@ -114,7 +114,7 @@ namespace testUI02
                     "}," +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
-            var response = await WebAuthnModokiDesktop.credentials.create(devParams, json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.create(devParam, json, pin);
             if (response.isSuccess == true) {
                 log("---");
                 log("Registration successful!");
@@ -184,7 +184,7 @@ namespace testUI02
                     string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(devParams, json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.get(devParam, json, pin);
 
             if(response.isSuccess == true) {
                 log("---");
@@ -241,7 +241,7 @@ namespace testUI02
                    string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(devParams, json, pin);
+            var response = await WebAuthnModokiDesktop.credentials.get(devParam, json, pin);
 
             if (response.isSuccess == true) {
                 log("---");

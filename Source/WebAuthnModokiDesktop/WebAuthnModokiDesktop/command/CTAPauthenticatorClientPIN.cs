@@ -5,9 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PeterO.Cbor;
 using System.Security.Cryptography;
-
 using System.Runtime.InteropServices;       // dll
-using WebAuthnModokiDesktop;
 
 namespace gebo.CTAP2
 {
@@ -21,7 +19,7 @@ namespace gebo.CTAP2
         static extern int Aes256cbc_Dec(string key, string inbuf, StringBuilder outbuf);
 
         public int RetryCount { get; private set; }
-        public async Task<CTAPResponse> GetRetries(devparam devParam)
+        public async Task<CTAPResponse> GetRetries(DevParam devParam)
         {
             var response = new CTAPResponse();
 
@@ -55,7 +53,7 @@ namespace gebo.CTAP2
         public KeyAgreement Authenticator_KeyAgreement { get; private set; }
         public KeyAgreement My_KeyAgreement { get; private set; }
 
-        public async Task<CTAPResponse> GetKeyAgreement(devparam devParam)
+        public async Task<CTAPResponse> GetKeyAgreement(DevParam devParam)
         {
             var response = new CTAPResponse();
 
@@ -83,7 +81,7 @@ namespace gebo.CTAP2
             return (response);
         }
 
-        public async Task<CTAPResponse> SetPIN(devparam devParam, byte[] pinAuth,byte[] newPinEnc)
+        public async Task<CTAPResponse> SetPIN(DevParam devParam, byte[] pinAuth,byte[] newPinEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -118,7 +116,7 @@ namespace gebo.CTAP2
             return (response);
         }
 
-        public async Task<CTAPResponse> ChangePIN(devparam devParam, byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
+        public async Task<CTAPResponse> ChangePIN(DevParam devParam, byte[] pinAuth, byte[] newPinEnc,byte[] pinHashEnc)
         {
             var cbor = CBORObject.NewMap();
 
@@ -156,7 +154,7 @@ namespace gebo.CTAP2
             return (response);
         }
 
-        public async Task<CTAPResponsePinToken> GetPINToken(devparam devParam, byte[] pinHashEnc)
+        public async Task<CTAPResponsePinToken> GetPINToken(DevParam devParam, byte[] pinHashEnc)
         {
             var cbor = CBORObject.NewMap();
 

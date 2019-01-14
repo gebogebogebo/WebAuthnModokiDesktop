@@ -16,7 +16,7 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<createcommandstatus> create(devparam devParam, string publickeyJson,string pin="")
+        public static async Task<createcommandstatus> create(DevParam devParam, string publickeyJson,string pin="")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforCreate>(publickeyJson);
@@ -28,7 +28,7 @@ namespace WebAuthnModokiDesktop
                 return (status);
             }
         }
-        public static async Task<createcommandstatus> create(devparam devParam, PublicKeyforCreate publickey)
+        public static async Task<createcommandstatus> create(DevParam devParam, PublicKeyforCreate publickey)
         {
             var status = new createcommandstatus();
 

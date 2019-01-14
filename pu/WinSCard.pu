@@ -1,0 +1,36 @@
+@startuml
+start
+:SCardEstablishContext();
+
+:SCardListReadersW()
+**NFC ReaderCheck**;
+
+if (Is NFC Reader Ready ?) then (yes)
+
+    :SCardConnectW()
+    **Get Authenticator Handle**;
+
+    if (Get Authenticator Handle) then (Success)
+
+        :SCardTransmit()
+        **SELECT FIDO Applet**;
+
+        if (Is FIDO Applet Present ?) then (Yes)
+            partition "CTAP2 Command in APDU Protocol\nSend & Response" {
+                while (for each **APDU**)
+                    :SCardTransmit()
+                    **Send APDU Get Response**;
+                endwhile
+            }
+        else (No-Not FIDO Authenticator)
+        endif
+
+        :SCardDisconnect();
+    else (Failed-Error)
+    endif
+else (no)    
+endif
+
+:SCardReleaseContext();
+end
+@enduml

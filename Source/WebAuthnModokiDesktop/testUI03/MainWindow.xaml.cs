@@ -20,13 +20,13 @@ namespace testUI03
     /// </summary>
     public partial class MainWindow : Window
     {
-        private WebAuthnModokiDesktop.devparam devParam;
+        private gebo.CTAP2.DevParam devParam;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            devParam = WebAuthnModokiDesktop.devparam.getDefaultParams();
+            devParam = gebo.CTAP2.DevParam.getDefaultParams();
         }
 
         private async void buttonSetPIN_Click(object sender, RoutedEventArgs e)
@@ -59,7 +59,7 @@ namespace testUI03
             msg = msg + string.Format($"isSuccess={ret.isSuccess}") + "\r\n";
             msg = msg + string.Format($"msg={ret.msg}") + "\r\n";
             msg = msg + string.Format($"HidInfo={ret.HidInfo}") + "\r\n";
-            msg = msg + string.Format($"NFcInfo={ret.NfcInfo}") + "\r\n";
+            msg = msg + string.Format($"NfcInfo={ret.NfcInfo}") + "\r\n";
             msg = msg + string.Format($"PIN Retry Count={ret.PinRetryCount}") + "\r\n";
 
             if( ret.AuthenticatorInfo != null) {

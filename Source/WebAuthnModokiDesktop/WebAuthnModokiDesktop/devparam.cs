@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using gebo.CTAP2;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2
 {
-    public class devparam
+    public class DevParam
     {
         public List<HidParam> hidparams { get; set; }
         public List<NfcParam> nfcparams { get; set; }
 
-        public static devparam getDefaultParams()
+        public static DevParam getDefaultParams()
         {
-            var ret = new devparam();
+            var ret = new DevParam();
 
             // HID
             {

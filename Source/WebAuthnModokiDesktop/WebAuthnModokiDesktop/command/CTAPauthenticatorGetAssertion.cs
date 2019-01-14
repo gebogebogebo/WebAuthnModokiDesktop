@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using PeterO.Cbor;
 using System.Runtime.Serialization;
-using WebAuthnModokiDesktop;
 
 namespace gebo.CTAP2
 {
@@ -24,7 +23,7 @@ namespace gebo.CTAP2
 
         public byte[] ClientDataHash { get; set; }
 
-        public async Task<CTAPResponseAssertion> SendAndResponse(devparam devParam)
+        public async Task<CTAPResponseAssertion> SendAndResponse(DevParam devParam)
         {
             // check
             {

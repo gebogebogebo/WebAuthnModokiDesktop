@@ -17,7 +17,7 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<infocommandstatus> info(devparam devParam)
+        public static async Task<infocommandstatus> info(DevParam devParam)
         {
             var status = new infocommandstatus();
             try {

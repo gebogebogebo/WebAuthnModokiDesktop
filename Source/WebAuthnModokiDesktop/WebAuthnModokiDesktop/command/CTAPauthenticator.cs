@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using PeterO.Cbor;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
-using WebAuthnModokiDesktop;
 
 namespace gebo.CTAP2
 {
@@ -54,7 +53,7 @@ namespace gebo.CTAP2
             return (name);
         }
 
-        protected async Task<CTAPResponseInner> sendCommandandResponse(devparam devParam, byte command, CBORObject payload)
+        protected async Task<CTAPResponseInner> sendCommandandResponse(DevParam devParam, byte command, CBORObject payload)
         {
             byte[] send = null;
 
@@ -71,7 +70,7 @@ namespace gebo.CTAP2
             return (await sendCommandandResponse(devParam, send));
         }
 
-        protected static async Task<CTAPResponseInner> sendCommandandResponse(devparam devParam, byte[] send)
+        protected static async Task<CTAPResponseInner> sendCommandandResponse(DevParam devParam, byte[] send)
         {
             var response = new CTAPResponseInner();
 

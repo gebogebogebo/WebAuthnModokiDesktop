@@ -12,13 +12,13 @@ namespace testUI01
     /// </summary>
     public partial class MainWindow : Window
     {
-        private WebAuthnModokiDesktop.devparam devParam;
+        private gebo.CTAP2.DevParam devParam;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            devParam = WebAuthnModokiDesktop.devparam.getDefaultParams();
+            devParam = gebo.CTAP2.DevParam.getDefaultParams();
         }
 
         private void setResponse(gebo.CTAP2.CTAPauthenticator ctap, gebo.CTAP2.CTAPResponse res)

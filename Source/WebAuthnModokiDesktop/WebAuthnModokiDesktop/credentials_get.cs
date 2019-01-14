@@ -18,7 +18,7 @@ namespace WebAuthnModokiDesktop
 
     public partial class credentials
     {
-        public static async Task<getcommandstatus> get(devparam devParam, string publickeyJson, string pin = "")
+        public static async Task<getcommandstatus> get(DevParam devParam, string publickeyJson, string pin = "")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforGet>(publickeyJson);
@@ -31,7 +31,7 @@ namespace WebAuthnModokiDesktop
             }
         }
 
-        public static async Task<getcommandstatus> get(devparam devParam, PublicKeyforGet publickey)
+        public static async Task<getcommandstatus> get(DevParam devParam, PublicKeyforGet publickey)
         {
             var status = new getcommandstatus();
 
