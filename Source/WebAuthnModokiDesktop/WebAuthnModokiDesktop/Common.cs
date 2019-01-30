@@ -87,11 +87,6 @@ namespace gebo.CTAP2
 
         internal static byte[] AES256CBCEnc(byte[] key, byte[] data)
         {
-            byte[] encdata;
-            // pinHashEnc = AES256-CBC(sharedSecret, IV=0, pinsha16)
-            // 暗号化鍵
-            //const string AesKey = @"<半角32文字（8bit*32文字=256bit）>";
-
             // 暗号化方式はAES
             AesManaged aes = new AesManaged();
             // 鍵の長さ
@@ -104,56 +99,33 @@ namespace gebo.CTAP2
             aes.IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             aes.Key = key;
             // パディング
-            aes.Padding = PaddingMode.PKCS7;
+            aes.Padding = PaddingMode.None;
 
             // 暗号化
-            encdata = aes.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
-
-            // cでは16byteなんだけど、C#ではなぜか32byteとなる（けど先頭16byteは同じ)
-            // なので、16byteにする
-            encdata = encdata.ToList().Skip(0).Take(16).ToArray();
+            var encdata = aes.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
 
             return (encdata);
         }
 
-        // 暗号化されたBase64形式の入力文字列をAES復号して平文の文字列を返すメソッド
-        internal static async Task<byte[]> AES256CBC_Decrypt(byte[] key,byte[] src)
+        internal static byte[] AES256CBC_Decrypt(byte[] key,byte[] data)
         {
-            byte[] data;
+            // 暗号化方式はAES
+            AesManaged aes = new AesManaged();
+            // 鍵の長さ
+            aes.KeySize = 256;
+            // ブロックサイズ（何文字単位で処理するか）
+            aes.BlockSize = 128;
+            // 暗号利用モード
+            aes.Mode = CipherMode.CBC;
+            // 初期化ベクトル(0x00×16byte)
+            aes.IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            aes.Key = key;
+            // パディング
+            aes.Padding = PaddingMode.None;
 
-            byte[] iv = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            var encdata = aes.CreateDecryptor().TransformFinalBlock(data, 0, data.Length);
 
-            // Decryptor（復号器）を用意する
-            using (var aes = new AesManaged()) {
-                // 鍵の長さ
-                //aes.KeySize = 256;
-                // ブロックサイズ（何文字単位で処理するか）
-                //aes.BlockSize = 128;
-                // 暗号利用モード
-                //aes.Mode = CipherMode.CBC;
-                // パディング
-                //aes.Padding = PaddingMode.PKCS7;
-
-                using (var decryptor = aes.CreateDecryptor(key, iv))
-                // 入力ストリームを開く
-                using (var inStream = new MemoryStream(src, false))
-                // 出力ストリームを用意する
-                using (var outStream = new MemoryStream()) {
-
-                    // 復号して一定量ずつ読み出し、それを出力ストリームに書き出す
-                    using (var cs = new CryptoStream(inStream, decryptor, CryptoStreamMode.Read)) {
-                        byte[] buffer = new byte[128]; // バッファーサイズはBlockSizeの倍数にする
-                        int len = 0;
-                        while ((len = await cs.ReadAsync(buffer, 0, 128)) > 0)
-                            outStream.Write(buffer, 0, len);
-                    }
-                    // 出力がファイルなら、以上で完了
-
-                    data = outStream.ToArray();
-                }
-            }
-
-            return data;
+            return (encdata);
         }
 
 
