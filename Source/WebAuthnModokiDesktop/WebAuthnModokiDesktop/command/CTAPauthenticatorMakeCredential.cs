@@ -20,6 +20,8 @@ namespace gebo.CTAP2
         [DataMember()]
         public string UserId { get; set; }
         [DataMember()]
+        public byte[] UserId_bytearray { get; set; }
+        [DataMember()]
         public string UserName { get; set; }
         [DataMember()]
         public string UserDisplayName { get; set; }
@@ -55,9 +57,24 @@ namespace gebo.CTAP2
             // 0x03 : user
             {
                 var user = CBORObject.NewMap();
-                user.Add("id", Encoding.ASCII.GetBytes(UserId));
-                user.Add("name", UserName);
-                user.Add("displayName", UserDisplayName);
+                if(UserId_bytearray != null) {
+                    user.Add("id", UserId_bytearray);
+                } else {
+                    user.Add("id", Encoding.ASCII.GetBytes(UserId));
+                }
+
+                if(string.IsNullOrEmpty(UserName)) {
+                    user.Add("name", "name");
+                } else {
+                    user.Add("name", UserName);
+                }
+
+                if (string.IsNullOrEmpty(UserDisplayName)) {
+                    user.Add("displayName", "displayName");
+                }else {
+                    user.Add("displayName", UserDisplayName);
+                }
+
                 cbor.Add(0x03, user);
             }
 

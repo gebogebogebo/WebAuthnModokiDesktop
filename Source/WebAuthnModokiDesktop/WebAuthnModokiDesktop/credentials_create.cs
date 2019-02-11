@@ -42,6 +42,7 @@ namespace WebAuthnModokiDesktop
                 ctap.RpId = publickey.rp.id;
                 ctap.RpName = publickey.rp.name;
                 ctap.UserId = publickey.user.id;
+                ctap.UserId_bytearray = publickey.user.id_bytearray;
                 ctap.UserName = publickey.user.name;
                 ctap.UserDisplayName = publickey.user.displayName;
                 ctap.ClientDataHash = CTAPauthenticator.CreateClientDataHash(publickey.challenge);
@@ -140,6 +141,8 @@ namespace WebAuthnModokiDesktop
         {
             [DataMember]
             public string id { get; set; }          // string にしとく
+            [DataMember]
+            public byte[] id_bytearray { get; set; }
             [DataMember]
             public string name { get; set; }
             [DataMember]

@@ -157,14 +157,14 @@ namespace testUI01
             }
 
             var att = WebAuthnModokiDesktop.credentials.deSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
-            if (att == null) {
-                log("Error deSerializeAttestationFromFile");
-                return;
-            }
 
             // credential-id
             var credentialid = new byte[0];
             if ((bool)checkGetAssertionCredentialId.IsChecked) {
+                if (att == null) {
+                    log("Error deSerializeAttestationFromFile");
+                    return;
+                }
                 credentialid = att.CredentialId;
             }
 
@@ -195,6 +195,11 @@ namespace testUI01
             setResponse(ret);
 
             if (ret.isSuccess == true) {
+                if (att == null) {
+                    log("Error --- Verify - NG!(deSerializeAttestationFromFile)");
+                    return;
+                }
+
                 // Verify - check index=0 only
                 if (WebAuthnModokiDesktop.CTAPVerify.Verify(ret, att.CredentialPublicKeyByte,0)) {
                     log("Verify - OK!");
