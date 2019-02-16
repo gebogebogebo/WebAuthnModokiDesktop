@@ -64,13 +64,13 @@ namespace gebo.CTAP2
                 }
 
                 if(string.IsNullOrEmpty(UserName)) {
-                    user.Add("name", "name");
+                    user.Add("name", " ");
                 } else {
                     user.Add("name", UserName);
                 }
 
                 if (string.IsNullOrEmpty(UserDisplayName)) {
-                    user.Add("displayName", "displayName");
+                    user.Add("displayName", " ");
                 }else {
                     user.Add("displayName", UserDisplayName);
                 }

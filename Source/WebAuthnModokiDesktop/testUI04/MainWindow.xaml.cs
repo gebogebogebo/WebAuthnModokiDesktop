@@ -101,10 +101,9 @@ namespace testUI04
                                 string.Format($"id : '{rpid}',") +
                             @"}," +
                             @"user : {" +
-                                //string.Format($"id:'test',") +
                                 string.Format($"id_bytearray:[{string.Join(",", userid)}],") +
-                            string.Format($"name :'{username}',") +
-                            string.Format($"displayName :'{userdisplayname}',") +
+                                //string.Format($"name :'{username}',") +
+                                string.Format($"displayName :'{userdisplayname}',") +
                             @"}," +
                             @"pubKeyCredParams: [{type: 'public-key',alg: -7}]," +
                             @"attestation: 'direct'," +

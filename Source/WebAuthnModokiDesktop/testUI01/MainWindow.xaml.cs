@@ -32,7 +32,8 @@ namespace testUI01
 
             if (res.GetType() == typeof(gebo.CTAP2.CTAPResponseAssertion)) {
                 var ret = (gebo.CTAP2.CTAPResponseAssertion)res;
-                log(string.Format($"User_Id={Encoding.ASCII.GetString(ret.User_Id)}"));
+                log(string.Format($"User_Id(HEX)={gebo.CTAP2.Common.BytesToHexString(ret.User_Id)}"));
+                //log(string.Format($"User_Id={Encoding.ASCII.GetString(ret.User_Id)}"));
                 log(string.Format($"User_Name={ret.User_Name}"));
                 log(string.Format($"User_DisplayName={ret.User_DisplayName}"));
                 log(string.Format($"Flags_AttestedCredentialDataIncluded={ret.Flags_AttestedCredentialDataIncluded}"));
