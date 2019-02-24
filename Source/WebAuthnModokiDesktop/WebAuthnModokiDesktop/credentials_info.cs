@@ -45,7 +45,7 @@ namespace WebAuthnModokiDesktop
                 }
 
                 // retry
-                {
+                if( status.AuthenticatorInfo.Option_clientPin == CTAPResponseInfo.OptionFlag.present_and_set_to_true) {
                     var ctap = new CTAPauthenticatorClientPIN();
                     var ret = await ctap.GetRetries(devParam);
                     status.commands.Add(new commandstatus.commandinfo(ctap, ret));

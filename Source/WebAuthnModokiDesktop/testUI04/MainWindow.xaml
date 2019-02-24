@@ -10,6 +10,7 @@
         <Button x:Name="buttonRegist" Content="Regist File Data" HorizontalAlignment="Left" Height="22" Margin="62,98,0,0" VerticalAlignment="Top" Width="143" Click="buttonRegist_Click"/>
         <Label x:Name="labelCounter" Content="Label" HorizontalAlignment="Left" Margin="25,19,0,0" VerticalAlignment="Top"/>
         <Button x:Name="buttonLoad" Content="Lodad File Data" HorizontalAlignment="Left" Height="19" Margin="62,188,0,0" VerticalAlignment="Top" Width="143" Click="buttonLoad_Click"/>
+        <TextBox x:Name="textLog" HorizontalAlignment="Left" Height="235" Margin="268,32,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="437"/>
 
     </Grid>
 </Window>
