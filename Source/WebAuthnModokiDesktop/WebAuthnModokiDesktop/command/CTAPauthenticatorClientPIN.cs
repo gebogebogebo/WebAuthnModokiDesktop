@@ -195,7 +195,9 @@ namespace gebo.CTAP2
             var bG_y = new StringBuilder(256);
             var strSharedSecret = new StringBuilder(256);
 
-            int st = CreateSharedSecret(aG_x, aG_y, bG_x, bG_y, strSharedSecret);
+            // C#版に変更してみる
+            //int st = CreateSharedSecret(aG_x, aG_y, bG_x, bG_y, strSharedSecret);
+            int st = CreateSharedSecretNew.CreateSharedSecret(aG_x, aG_y, bG_x, bG_y, strSharedSecret);
 
             // byte配列(32)にする
             var sharedSecret = Common.HexStringToBytes(strSharedSecret.ToString());

@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="CreateSharedSecretNew.cs" />
     <Compile Include="credentials.cs" />
     <Compile Include="credentials_create.cs" />
     <Compile Include="credentials_get.cs" />
