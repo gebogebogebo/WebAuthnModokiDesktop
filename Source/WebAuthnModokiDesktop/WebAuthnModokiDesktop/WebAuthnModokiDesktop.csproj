@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\BouncyCastle\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="CBOR, Version=3.4.0.0, Culture=neutral, PublicKeyToken=9cd62db60ea5554c, processorArchitecture=MSIL">
       <HintPath>..\packages\PeterO.Cbor.3.4.0\lib\net40\CBOR.dll</HintPath>
     </Reference>
@@ -94,6 +97,7 @@
     <Compile Include="response\CTAPResponseStatusMessage.cs" />
     <Compile Include="response\KeyAgreement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VerifyNew.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NLog.config">

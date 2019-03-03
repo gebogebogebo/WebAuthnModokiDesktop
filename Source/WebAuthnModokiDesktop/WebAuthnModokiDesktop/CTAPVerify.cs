@@ -4,19 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;       // dll
 using gebo.CTAP2;
 
 namespace WebAuthnModokiDesktop
 {
     public class CTAPVerify
     {
-        [DllImport("SharedSecret.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        static extern int Verify_AttestaionSig(string sigBaseSha256, string x5c, string sig);
-
-        [DllImport("SharedSecret.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        static extern int Verify_AssertionSig(string sigBaseSha256, string pubkeyPem, string sig);
-
         public static bool Verify(createcommandstatus status)
         {
             foreach(var command in status.commands) {
@@ -53,16 +46,10 @@ namespace WebAuthnModokiDesktop
                 sigBase.AddRange(clientDataHash.ToList());
 
                 // Verify
-                {
-                    SHA256 sha = new SHA256CryptoServiceProvider();
-                    var hash = sha.ComputeHash(sigBase.ToArray());
-                    var sigBaseStr = Common.BytesToHexString(hash);
-                    var x5cStr = Common.BytesToHexString(attestation.AttStmtX5c);
-                    var sigStr = Common.BytesToHexString(attestation.AttStmtSig);
-                    if( Verify_AttestaionSig(sigBaseStr, x5cStr, sigStr) != 0 ) {
-                        // verify error
-                        throw (new Exception("verify failed Signature"));
-                    }
+                var pubKeyPem = VerifyNew.GetPublicKeyPemFromCertDer(attestation.AttStmtX5c);
+                if( VerifyNew.VerifySignature(sigBase.ToArray(), pubKeyPem, attestation.AttStmtSig) == false) {
+                    // verify error
+                    throw (new Exception("verify failed Signature"));
                 }
 
                 verify = true;
@@ -115,15 +102,9 @@ namespace WebAuthnModokiDesktop
                 sigBase.AddRange(clientDataHash.ToList());
 
                 // Verify
-                {
-                    SHA256 sha = new SHA256CryptoServiceProvider();
-                    var hash = sha.ComputeHash(sigBase.ToArray());
-                    var sigBaseStr = Common.BytesToHexString(hash);
-                    var sigStr = Common.BytesToHexString(assertion.Signature);
-                    if (Verify_AssertionSig(sigBaseStr, pubkeypem, sigStr) != 0) {
-                        // verify error
-                        throw (new Exception("verify failed Signature"));
-                    }
+                if (VerifyNew.VerifySignature(sigBase.ToArray(), pubkeypem, assertion.Signature) == false) {
+                    // verify error
+                    throw (new Exception("verify failed Signature"));
                 }
 
                 verify = true;

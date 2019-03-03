@@ -10,29 +10,6 @@ namespace gebo.CTAP2
 {
     public class CreateSharedSecretNew
     {
-        /*
-        // 16進数文字列 => Byte配列
-        public static byte[] HexStringToBytes(string str)
-        {
-            var bs = new List<byte>();
-            for (int i = 0; i < str.Length / 2; i++) {
-                bs.Add(Convert.ToByte(str.Substring(i * 2, 2), 16));
-            }
-            // "01-AB-EF" こういう"-"区切りを想定する場合は以下のようにする
-            // var bs = str.Split('-').Select(hex => Convert.ToByte(hex, 16));
-            return bs.ToArray();
-        }
-
-        // Byte配列 => 16進数文字列
-        public static string BytesToHexString(byte[] bs)
-        {
-            var str = BitConverter.ToString(bs);
-            // "-"がいらないなら消しておく
-            str = str.Replace("-", string.Empty);
-            return str;
-        }
-        */
-
         public static int CreateSharedSecret(
                     string aG_x, string aG_y,               // (I )64文字
                     StringBuilder bG_x, StringBuilder bG_y, // ( O)64文字
