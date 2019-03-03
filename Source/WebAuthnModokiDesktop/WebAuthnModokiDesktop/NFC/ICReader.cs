@@ -8,8 +8,6 @@ namespace gebo.NFC
     {
         public string LinkedReaderName { get; private set; }
 
-        protected static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
         private IntPtr context = IntPtr.Zero;
         private IntPtr handle = IntPtr.Zero;
         private byte[] recvBuff;
@@ -37,7 +35,6 @@ namespace gebo.NFC
         {
             SCardResult result = SCardAPI.SCardEstablishContext(SCardAPI.SCARD_SCOPE_USER, IntPtr.Zero, IntPtr.Zero, out this.context);
             if (result != SCardResult.SCARD_S_SUCCESS) {
-                logger.Error("SCardEstablishContext");
                 this.context = IntPtr.Zero;
                 return false;
             }
@@ -46,11 +43,13 @@ namespace gebo.NFC
 
         private static void logResponse(byte[] addu, APDUresponse res)
         {
+            /*
             logger.Debug(string.Format($"SendAPDU={CTAP2.Common.BytesToHexString(addu)}"));
             logger.Debug(string.Format($"IsSuccess={res.IsSuccess}"));
             logger.Debug(string.Format($"Message={res.Message}"));
             logger.Debug(string.Format($"SW1=0x{res.Sw1:X2},SW2=0x{res.Sw2:X2}"));
             logger.Debug(string.Format($"Data={CTAP2.Common.BytesToHexString(res.Data)}"));
+            */
         }
 
         public void Dispose()
@@ -79,8 +78,7 @@ namespace gebo.NFC
                 this.recvBuff = new byte[1024];
 
                 ret = true;
-            } catch (Exception ex) {
-                logger.Error(ex);
+            } catch (Exception) {
             }
             return ret;
         }
@@ -104,8 +102,7 @@ namespace gebo.NFC
             try {
                 int recvSize = SCardAPI.SCardTransmit(this.handle, apdu, this.recvBuff);
                 res = new APDUresponse(recvBuff, recvSize);
-            } catch (Exception ex) {
-                logger.Error(ex);
+            } catch (Exception) {
             } finally {
                 logResponse(apdu, res);
             }
@@ -169,8 +166,7 @@ namespace gebo.NFC
                 }
                 ret = find;
 
-            } catch (Exception ex) {
-                logger.Error(ex);
+            } catch (Exception) {
             }
             return (ret);
         }

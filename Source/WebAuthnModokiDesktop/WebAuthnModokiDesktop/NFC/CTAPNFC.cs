@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gebo.NFC;
-
-using System.Linq;      // PEND
+using System.Linq;
 
 namespace gebo.CTAP2
 {
@@ -17,8 +16,6 @@ namespace gebo.CTAP2
 
     internal class CTAPNFC
     {
-        protected static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
         public static List<string> ToStringList(List<NfcParam> nfcparams)
         {
             var ret = new List<string>();
@@ -47,15 +44,13 @@ namespace gebo.CTAP2
                         uid = response.Data;
                     }
                 }
-            } catch (Exception ex) {
-                logger.Error(ex);
+            } catch (Exception) {
             }
             return (uid);
         }
 
         public static string CheckAP(List<NfcParam> nfcParams)
         {
-            logger.Debug("CheckAP");
             string ret = "";
             var apdures = sendCommandandResponse(nfcParams, null);
             if (apdures != null && apdures.IsSuccess == true) {
@@ -148,8 +143,7 @@ namespace gebo.CTAP2
                     return (res);
                 }
 
-            } catch (Exception ex) {
-                logger.Error(ex);
+            } catch (Exception) {
             }
             return (null);
         }

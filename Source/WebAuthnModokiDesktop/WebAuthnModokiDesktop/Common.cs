@@ -85,7 +85,7 @@ namespace gebo.CTAP2
             }
         }
 
-        internal static byte[] AES256CBCEnc(byte[] key, byte[] data)
+        internal static byte[] AES256CBC_Encrypt(byte[] key, byte[] data)
         {
             // 暗号化方式はAES
             AesManaged aes = new AesManaged();
@@ -128,31 +128,6 @@ namespace gebo.CTAP2
             return (encdata);
         }
 
-
-        internal static string Decrypt(byte[] key,byte[] cipherText)
-        {
-            var plainText = string.Empty;
-
-            var BLOCK_SIZE = 128;   // 128bit 固定
-            var KEY_SIZE = 256;     // 128/192/256bit から選択
-
-            var csp = new AesCryptoServiceProvider();
-            csp.BlockSize = BLOCK_SIZE;
-            csp.KeySize = KEY_SIZE;
-            csp.Mode = CipherMode.CBC;
-            csp.Padding = PaddingMode.PKCS7;
-            csp.IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            csp.Key = key;
-
-            using (var inms = new MemoryStream(cipherText))
-            using (var decryptor = csp.CreateDecryptor())
-            using (var cs = new CryptoStream(inms, decryptor, CryptoStreamMode.Read))
-            using (var reader = new StreamReader(cs)) {
-                plainText = reader.ReadToEnd();
-            }
-
-            return plainText;
-        }
     }
 
     internal static class JsonUtility
@@ -170,19 +145,8 @@ namespace gebo.CTAP2
         public static bool SerializeFile(object obj,string pathname)
         {
             var json = Serialize(obj);
-
             File.WriteAllText(pathname,json);
-
             return (true);
-            /*
-            var fs = new FileStream(pathname, FileMode.Create);
-            try {
-                fs.Write()
-                serializer.WriteObject(fs, obj);
-            } finally {
-                fs.Close();
-            }
-            */
         }
 
         /// <summary>

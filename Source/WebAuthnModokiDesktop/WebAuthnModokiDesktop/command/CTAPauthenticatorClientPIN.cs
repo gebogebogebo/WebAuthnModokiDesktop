@@ -217,7 +217,7 @@ namespace gebo.CTAP2
             //int st = Aes256cbc_Enc(key, data, enc);
             //var pinHashEnc = Common.HexStringToBytes(enc.ToString());
 
-            var pinHashEnc = Common.AES256CBCEnc(sharedSecret, pinsha16);
+            var pinHashEnc = Common.AES256CBC_Encrypt(sharedSecret, pinsha16);
 
             return (pinHashEnc);
         }
@@ -225,7 +225,7 @@ namespace gebo.CTAP2
         // newPinEnc: AES256-CBC(sharedSecret, IV = 0, newPin)
         public byte[] createNewPinEnc(byte[] sharedSecret, byte[] newpin64)
         {
-            byte[] newPinEnc = Common.AES256CBCEnc(sharedSecret, newpin64);
+            byte[] newPinEnc = Common.AES256CBC_Encrypt(sharedSecret, newpin64);
             /*
             {
                 string key = Common.BytesToHexString(sharedSecret);
@@ -282,7 +282,7 @@ namespace gebo.CTAP2
             }
             var newPinEnc = Common.HexStringToBytes(strNewPin64Enc.ToString());
             */
-            var newPinEnc = Common.AES256CBCEnc(sharedSecret, newpin64);
+            var newPinEnc = Common.AES256CBC_Encrypt(sharedSecret, newpin64);
 
             // HMAC-SHA-256(sharedSecret, newPinEnc)
             byte[] pinAuth;
@@ -311,7 +311,7 @@ namespace gebo.CTAP2
                 }
                 newPinEnc = Common.HexStringToBytes(strNewPin64Enc.ToString());
                 */
-                newPinEnc = Common.AES256CBCEnc(sharedSecret, newpin64);
+                newPinEnc = Common.AES256CBC_Encrypt(sharedSecret, newpin64);
 
             }
 
