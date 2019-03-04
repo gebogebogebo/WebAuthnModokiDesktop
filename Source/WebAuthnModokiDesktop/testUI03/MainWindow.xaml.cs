@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using gebo.CTAP2;
+using gebo.CTAP2.WebAuthnModokiDesktop;
+
 namespace testUI03
 {
     /// <summary>
@@ -26,13 +29,13 @@ namespace testUI03
         {
             InitializeComponent();
 
-            devParam = gebo.CTAP2.DevParam.getDefaultParams();
+            devParam = gebo.CTAP2.DevParam.GetDefaultParams();
         }
 
         private async void buttonSetPIN_Click(object sender, RoutedEventArgs e)
         {
             string newpin = textNewPINSet.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.setpin(devParam, newpin);
+            var ret = await Credentials.SetPin(devParam, newpin);
             if (ret.isSuccess == true) {
                 textStatusSet.Text = "Success! " + ret.msg;
             } else {
@@ -44,7 +47,7 @@ namespace testUI03
         {
             string newpin = textNewPIN.Text;
             string currentpin = textCurrentPIN.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.changepin(devParam, newpin, currentpin);
+            var ret = await Credentials.ChangePin(devParam, newpin, currentpin);
             if (ret.isSuccess == true) {
                 textStatus.Text = "Success! " + ret.msg;
             } else {
@@ -54,7 +57,7 @@ namespace testUI03
 
         private async void buttonInfo_Click(object sender, RoutedEventArgs e)
         {
-            var ret = await WebAuthnModokiDesktop.credentials.info(devParam);
+            var ret = await Credentials.Info(devParam);
             var msg = ""; 
             msg = msg + string.Format($"isSuccess={ret.isSuccess}") + "\r\n";
             msg = msg + string.Format($"msg={ret.msg}") + "\r\n";

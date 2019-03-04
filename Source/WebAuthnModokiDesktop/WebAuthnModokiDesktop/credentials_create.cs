@@ -6,31 +6,31 @@ using Newtonsoft.Json;
 using System.IO;
 using gebo.CTAP2;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2.WebAuthnModokiDesktop
 {
 
-    public class createcommandstatus:commandstatus
+    public class CreateCommandStatus:CommandStatus
     {
         public CTAPResponseAttestation attestation;
     }
 
-    public partial class credentials
+    public partial class Credentials
     {
-        public static async Task<createcommandstatus> create(DevParam devParam, string publickeyJson,string pin="")
+        public static async Task<CreateCommandStatus> Create(DevParam devParam, string publickeyJson,string pin="")
         {
             try {
                 var publickey = JsonConvert.DeserializeObject<PublicKeyforCreate>(publickeyJson);
                 publickey.pin = pin;
-                return (await create(devParam, publickey));
+                return (await Create(devParam, publickey));
             } catch (Exception ex) {
-                var status = new createcommandstatus();
+                var status = new CreateCommandStatus();
                 status.msg = ex.Message.ToString();
                 return (status);
             }
         }
-        public static async Task<createcommandstatus> create(DevParam devParam, PublicKeyforCreate publickey)
+        public static async Task<CreateCommandStatus> Create(DevParam devParam, PublicKeyforCreate publickey)
         {
-            var status = new createcommandstatus();
+            var status = new CreateCommandStatus();
 
             try {
                 if( publickey.rp == null || publickey.user == null || publickey.challenge == null) {
@@ -60,7 +60,7 @@ namespace WebAuthnModokiDesktop
                     var ctap2 = new CTAPauthenticatorClientPIN();
 
                     var st1 = await ctap2.GetKeyAgreement(devParam);
-                    status.commands.Add(new commandstatus.commandinfo(ctap2, st1));
+                    status.commands.Add(new CommandStatus.CommandInfo(ctap2, st1));
                     if (st1.Status != 0x00) {
                         throw (new Exception("GetKeyAgreement"));
                     }
@@ -70,7 +70,7 @@ namespace WebAuthnModokiDesktop
                     var pinHashEnc = ctap2.createPinHashEnc(pin, sharedSecret);
 
                     var token = await ctap2.GetPINToken(devParam, pinHashEnc);
-                    status.commands.Add(new commandstatus.commandinfo(ctap2, token));
+                    status.commands.Add(new CommandStatus.CommandInfo(ctap2, token));
                     if (token.Status != 0x00) {
                         throw (new Exception("GetPINToken"));
                     }
@@ -79,7 +79,7 @@ namespace WebAuthnModokiDesktop
                 }
 
                 var att = await ctap.SendAndResponse(devParam);
-                status.commands.Add(new commandstatus.commandinfo(ctap, att));
+                status.commands.Add(new CommandStatus.CommandInfo(ctap, att));
                 if (att.Status != 0x00) {
                     throw (new Exception("MakeCredential"));
                 }
@@ -92,7 +92,7 @@ namespace WebAuthnModokiDesktop
             return status;
         }
 
-        public static bool serializeAttestationToFile(CTAPResponseAttestation att,string pathname)
+        public static bool SerializeAttestationToFile(CTAPResponseAttestation att,string pathname)
         {
             try {
                 string path = Path.GetDirectoryName(pathname);
@@ -106,7 +106,7 @@ namespace WebAuthnModokiDesktop
             }
             return true;
         }
-        public static CTAPResponseAttestation deSerializeAttestationFromFile(string pathname)
+        public static CTAPResponseAttestation DeSerializeAttestationFromFile(string pathname)
         {
             CTAPResponseAttestation att;
             try {

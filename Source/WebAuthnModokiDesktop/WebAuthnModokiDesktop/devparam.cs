@@ -8,7 +8,7 @@ namespace gebo.CTAP2
         public List<HidParam> hidparams { get; set; }
         public List<NfcParam> nfcparams { get; set; }
 
-        public static DevParam getDefaultParams()
+        public static DevParam GetDefaultParams()
         {
             var ret = new DevParam();
 

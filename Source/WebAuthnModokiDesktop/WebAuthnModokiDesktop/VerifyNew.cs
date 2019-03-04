@@ -6,14 +6,12 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2.WebAuthnModokiDesktop
 {
     public class VerifyNew
     {
-        public static string GetPublicKeyPemFromCertDer(byte[] certDer)
+        public static string GetPublicKeyPEMfromCert(string certPem)
         {
-            string certPem = CTAPVerify.ConvertCertificateDERtoPEM(certDer);
-
             // 証明書の読み込み
             var pemReader = new PemReader(new StringReader(certPem));
             var readedCert = (Org.BouncyCastle.X509.X509Certificate)pemReader.ReadObject();

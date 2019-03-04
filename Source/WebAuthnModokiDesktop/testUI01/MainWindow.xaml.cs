@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using gebo.CTAP2.WebAuthnModokiDesktop;
+
 namespace testUI01
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace testUI01
         {
             InitializeComponent();
 
-            devParam = gebo.CTAP2.DevParam.getDefaultParams();
+            devParam = gebo.CTAP2.DevParam.GetDefaultParams();
         }
 
         private void setResponse(gebo.CTAP2.CTAPauthenticator ctap, gebo.CTAP2.CTAPResponse res)
@@ -44,7 +46,7 @@ namespace testUI01
             }
         }
 
-        private void setResponse(WebAuthnModokiDesktop.commandstatus res)
+        private void setResponse(CommandStatus res)
         {
             string msg = "<commoandstatus>\r\n" + "isSuccess=" + res.isSuccess + " , " + "msg=" + res.msg + "\r\n";
             textBox.Text = textBox.Text + msg + "\r\n";
@@ -62,7 +64,7 @@ namespace testUI01
         private void button_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【HID Test - Start】");
-            var ret = WebAuthnModokiDesktop.credentials.hidcheck(devParam.hidparams);
+            var ret = Credentials.HidCheck(devParam.hidparams);
             setResponse(ret);
             log("◆◆◆【HID Test - END】");
         }
@@ -70,7 +72,7 @@ namespace testUI01
         private async void button1_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【info - Start】");
-            var ret = await WebAuthnModokiDesktop.credentials.info(devParam);
+            var ret = await Credentials.Info(devParam);
             setResponse(ret);
             log("◆◆◆【info - END】");
         }
@@ -119,23 +121,23 @@ namespace testUI01
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.create(devParam, json, pin);
+            var ret = await Credentials.Create(devParam, json, pin);
             setResponse(ret);
 
             if (ret.isSuccess == true) {
                 // Verify
-                if( WebAuthnModokiDesktop.CTAPVerify.Verify(ret) ) {
+                if( CTAPVerify.Verify(ret) ) {
                     log("Verify - OK!");
 
                     // Export_File
-                    WebAuthnModokiDesktop.credentials.serializeAttestationToFile(ret.attestation, string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+                    Credentials.SerializeAttestationToFile(ret.attestation, string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
 
                     // Certificate
-                    var certpem = WebAuthnModokiDesktop.CTAPVerify.ConvertCertificateDERtoPEM(ret.attestation.AttStmtX5c);
+                    var certpem = CTAPVerify.ConvertCertificateDERtoPEM(ret.attestation.AttStmtX5c);
                     System.IO.File.WriteAllText(string.Format($".\\credentials\\credential_{rpid}_attestation_cert.pem"), certpem);
 
                     // PublicKey
-                    var pubkeypem = WebAuthnModokiDesktop.CTAPVerify.ConvertCOSEtoPEM(ret.attestation.CredentialPublicKeyByte);
+                    var pubkeypem = CTAPVerify.ConvertCOSEtoPEM(ret.attestation.CredentialPublicKeyByte);
                     System.IO.File.WriteAllText(string.Format($".\\credentials\\credential_{rpid}_pubkey.pem"), pubkeypem);
 
                 } else {
@@ -157,7 +159,7 @@ namespace testUI01
                 pin = "";
             }
 
-            var att = WebAuthnModokiDesktop.credentials.deSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
+            var att = Credentials.DeSerializeAttestationFromFile(string.Format($".\\credentials\\credential_{rpid}_attestation.json"));
 
             // credential-id
             var credentialid = new byte[0];
@@ -192,7 +194,7 @@ namespace testUI01
                    string.Format($"userVerification : '{userVerification}',") +
                 "}";
 
-            var ret = await WebAuthnModokiDesktop.credentials.get(devParam, json, pin);
+            var ret = await Credentials.Get(devParam, json, pin);
             setResponse(ret);
 
             if (ret.isSuccess == true) {
@@ -202,7 +204,7 @@ namespace testUI01
                 }
 
                 // Verify - check index=0 only
-                if (WebAuthnModokiDesktop.CTAPVerify.Verify(ret, att.CredentialPublicKeyByte,0)) {
+                if (CTAPVerify.Verify(ret, att.CredentialPublicKeyByte,0)) {
                     log("Verify - OK!");
                 } else {
                     log("Error --- Verify - NG!");
@@ -216,7 +218,7 @@ namespace testUI01
         {
             log("◆◆◆【setpin - Start】");
             string pin = textBoxPIN.Text;
-            var ret = await WebAuthnModokiDesktop.credentials.setpin(devParam, pin);
+            var ret = await Credentials.SetPin(devParam, pin);
             setResponse(ret);
             log("◆◆◆【setpin - END】");
         }
@@ -229,7 +231,7 @@ namespace testUI01
         private void buttonNFC_Click(object sender, RoutedEventArgs e)
         {
             log("◆◆◆【NFC Test - Start】");
-            var ret = WebAuthnModokiDesktop.credentials.nfccheck(devParam.nfcparams);
+            var ret = Credentials.NfcCheck(devParam.nfcparams);
             setResponse(ret);
             log("◆◆◆【NFC Test - END】");
 

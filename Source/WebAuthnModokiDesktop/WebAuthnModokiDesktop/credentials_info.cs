@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using gebo.CTAP2;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2.WebAuthnModokiDesktop
 {
-    public class infocommandstatus : commandstatus
+    public class InfoCommandStatus : CommandStatus
     {
         public string HidInfo="";
         public string NfcInfo = "";
@@ -15,21 +15,21 @@ namespace WebAuthnModokiDesktop
         public int PinRetryCount = 0;
     }
 
-    public partial class credentials
+    public partial class Credentials
     {
-        public static async Task<infocommandstatus> info(DevParam devParam)
+        public static async Task<InfoCommandStatus> Info(DevParam devParam)
         {
-            var status = new infocommandstatus();
+            var status = new InfoCommandStatus();
             try {
 
                 // hid
                 if( devParam.hidparams != null) {
-                    var ret = credentials.hidcheck(devParam.hidparams);
+                    var ret = Credentials.HidCheck(devParam.hidparams);
                     status.HidInfo = ret.msg;
                 }
                 // nfc
                 if( devParam.nfcparams != null) {
-                    var ret = credentials.nfccheck(devParam.nfcparams);
+                    var ret = Credentials.NfcCheck(devParam.nfcparams);
                     status.NfcInfo = ret.msg;
                 }
 
@@ -37,7 +37,7 @@ namespace WebAuthnModokiDesktop
                 {
                     var ctap = new CTAPauthenticatorGetInfo();
                     var ret = await ctap.SendAndResponse(devParam);
-                    status.commands.Add(new commandstatus.commandinfo(ctap, ret));
+                    status.commands.Add(new CommandStatus.CommandInfo(ctap, ret));
                     if (ret.Status != 0x00) {
                         throw (new Exception("GetInfo"));
                     }
@@ -48,7 +48,7 @@ namespace WebAuthnModokiDesktop
                 if( status.AuthenticatorInfo.Option_clientPin == CTAPResponseInfo.OptionFlag.present_and_set_to_true) {
                     var ctap = new CTAPauthenticatorClientPIN();
                     var ret = await ctap.GetRetries(devParam);
-                    status.commands.Add(new commandstatus.commandinfo(ctap, ret));
+                    status.commands.Add(new CommandStatus.CommandInfo(ctap, ret));
                     if (ret.Status != 0x00) {
                         throw (new Exception("GetRetries"));
                     }

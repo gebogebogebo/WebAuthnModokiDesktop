@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
-using gebo.CTAP2;
 
-namespace WebAuthnModokiDesktop
+namespace gebo.CTAP2.WebAuthnModokiDesktop
 {
     public class CTAPVerify
     {
-        public static bool Verify(createcommandstatus status)
+        public static bool Verify(CreateCommandStatus status)
         {
             foreach(var command in status.commands) {
                 if (command.cmd.GetType() == typeof(CTAPauthenticatorMakeCredential)) {
@@ -46,7 +45,8 @@ namespace WebAuthnModokiDesktop
                 sigBase.AddRange(clientDataHash.ToList());
 
                 // Verify
-                var pubKeyPem = VerifyNew.GetPublicKeyPemFromCertDer(attestation.AttStmtX5c);
+                string certPem = CTAPVerify.ConvertCertificateDERtoPEM(attestation.AttStmtX5c);
+                var pubKeyPem = VerifyNew.GetPublicKeyPEMfromCert(certPem);
                 if( VerifyNew.VerifySignature(sigBase.ToArray(), pubKeyPem, attestation.AttStmtSig) == false) {
                     // verify error
                     throw (new Exception("verify failed Signature"));
@@ -58,7 +58,7 @@ namespace WebAuthnModokiDesktop
             return (verify);
         }
 
-        public static bool Verify(getcommandstatus status, byte[] publickey,int assertion_index=0)
+        public static bool Verify(GetCommandStatus status, byte[] publickey,int assertion_index=0)
         {
             if( status.assertions.Count <= 0 || status.assertions.Count < assertion_index+1) {
                 return (false);
