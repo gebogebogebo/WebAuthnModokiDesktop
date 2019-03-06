@@ -19,34 +19,31 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\binDebug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>CS3021</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>CS3021</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto">
       <HintPath>..\BouncyCastle\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="CBOR, Version=3.4.0.0, Culture=neutral, PublicKeyToken=9cd62db60ea5554c, processorArchitecture=MSIL">
-      <HintPath>..\packages\PeterO.Cbor.3.4.0\lib\net40\CBOR.dll</HintPath>
-    </Reference>
-    <Reference Include="HidLibrary, Version=3.2.46.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\hidlibrary.3.2.46.0\lib\HidLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Numbers, Version=1.1.2.0, Culture=neutral, PublicKeyToken=9cd62db60ea5554c, processorArchitecture=MSIL">
-      <HintPath>..\packages\PeterO.Numbers.1.1.2\lib\net40\Numbers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -78,6 +75,85 @@
     <Compile Include="credentials_info.cs" />
     <Compile Include="CTAPVerify.cs" />
     <Compile Include="devparam.cs" />
+    <Compile Include="OSS\CBOR\BigInteger.cs" />
+    <Compile Include="OSS\CBOR\BigIntegerExtra.cs" />
+    <Compile Include="OSS\CBOR\Cbor\Base64.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORCanonical.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORDataUtilities.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORDateConverter.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORDouble.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBOREInteger.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBOREncodeOptions.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORException.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORExtendedDecimal.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORExtendedFloat.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORExtendedRational.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORInteger.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORJson.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORObject.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORObjectExtra.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORObjectFactory.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORObjectMath.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORReader.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORSingle.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag0.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag1.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag2.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag26.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag27.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag3.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag30.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag32.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag37.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag4.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTag5.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTagAny.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTagGenericString.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTagUnsigned.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORType.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTypeFilter.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORTypeMapper.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORUriConverter.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORUtilities.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CBORUuidConverter.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CharacterInputWithCount.cs" />
+    <Compile Include="OSS\CBOR\Cbor\CharacterReader.cs" />
+    <Compile Include="OSS\CBOR\Cbor\FastInteger2.cs" />
+    <Compile Include="OSS\CBOR\Cbor\ICBORConverter.cs" />
+    <Compile Include="OSS\CBOR\Cbor\ICBORNumber.cs" />
+    <Compile Include="OSS\CBOR\Cbor\ICBORTag.cs" />
+    <Compile Include="OSS\CBOR\Cbor\ICBORToFromConverter.cs" />
+    <Compile Include="OSS\CBOR\Cbor\ICharacterInput.cs" />
+    <Compile Include="OSS\CBOR\Cbor\JSONOptions.cs" />
+    <Compile Include="OSS\CBOR\Cbor\PODOptions.cs" />
+    <Compile Include="OSS\CBOR\Cbor\PropertyMap.cs" />
+    <Compile Include="OSS\CBOR\Cbor\PropertyMap2.cs" />
+    <Compile Include="OSS\CBOR\Cbor\SharedRefs.cs" />
+    <Compile Include="OSS\CBOR\Cbor\StringOutput.cs" />
+    <Compile Include="OSS\CBOR\Cbor\StringRefs.cs" />
+    <Compile Include="OSS\CBOR\Cbor\URIUtility.cs" />
+    <Compile Include="OSS\CBOR\DataUtilities.cs" />
+    <Compile Include="OSS\CBOR\DebugUtility.cs" />
+    <Compile Include="OSS\CBOR\ExtendedDecimal.cs" />
+    <Compile Include="OSS\CBOR\ExtendedFloat.cs" />
+    <Compile Include="OSS\CBOR\ExtendedRational.cs" />
+    <Compile Include="OSS\CBOR\PrecisionContext.cs" />
+    <Compile Include="OSS\CBOR\Rounding.cs" />
+    <Compile Include="OSS\CBOR\TrapException.cs" />
+    <Compile Include="OSS\HidLibrary\Extensions.cs" />
+    <Compile Include="OSS\HidLibrary\HidAsyncState.cs" />
+    <Compile Include="OSS\HidLibrary\HidDevice.cs" />
+    <Compile Include="OSS\HidLibrary\HidDeviceAttributes.cs" />
+    <Compile Include="OSS\HidLibrary\HidDeviceCapabilities.cs" />
+    <Compile Include="OSS\HidLibrary\HidDeviceData.cs" />
+    <Compile Include="OSS\HidLibrary\HidDeviceEventMonitor.cs" />
+    <Compile Include="OSS\HidLibrary\HidDevices.cs" />
+    <Compile Include="OSS\HidLibrary\HidFastReadDevice.cs" />
+    <Compile Include="OSS\HidLibrary\HidFastReadEnumerator.cs" />
+    <Compile Include="OSS\HidLibrary\HidReport.cs" />
+    <Compile Include="OSS\HidLibrary\IHidDevice.cs" />
+    <Compile Include="OSS\HidLibrary\IHidEnumerator.cs" />
+    <Compile Include="OSS\HidLibrary\NativeMethods.cs" />
     <Compile Include="NFC\APDUresponse.cs" />
     <Compile Include="NFC\APDUstatus.cs" />
     <Compile Include="NFC\ChangeEndian.cs" />
@@ -86,6 +162,31 @@
     <Compile Include="NFC\SCard\SCardAPI.cs" />
     <Compile Include="NFC\SCard\SCardIORequest.cs" />
     <Compile Include="NFC\SCard\SCardResult.cs" />
+    <Compile Include="OSS\Numbers\BigNumberFlags.cs" />
+    <Compile Include="OSS\Numbers\BitShiftAccumulator.cs" />
+    <Compile Include="OSS\Numbers\DigitShiftAccumulator.cs" />
+    <Compile Include="OSS\Numbers\EContext.cs" />
+    <Compile Include="OSS\Numbers\EDecimal.cs" />
+    <Compile Include="OSS\Numbers\EDecimalExtra.cs" />
+    <Compile Include="OSS\Numbers\EFloat.cs" />
+    <Compile Include="OSS\Numbers\EFloatExtra.cs" />
+    <Compile Include="OSS\Numbers\EInteger.cs" />
+    <Compile Include="OSS\Numbers\EIntegerExtra.cs" />
+    <Compile Include="OSS\Numbers\ERational.cs" />
+    <Compile Include="OSS\Numbers\ERationalExtra.cs" />
+    <Compile Include="OSS\Numbers\ERounding.cs" />
+    <Compile Include="OSS\Numbers\ETrapException.cs" />
+    <Compile Include="OSS\Numbers\ExtendedOrSimpleRadixMath.cs" />
+    <Compile Include="OSS\Numbers\Extras.cs" />
+    <Compile Include="OSS\Numbers\FastInteger.cs" />
+    <Compile Include="OSS\Numbers\FastIntegerFixed.cs" />
+    <Compile Include="OSS\Numbers\IRadixMath.cs" />
+    <Compile Include="OSS\Numbers\IRadixMathHelper.cs" />
+    <Compile Include="OSS\Numbers\IShiftAccumulator.cs" />
+    <Compile Include="OSS\Numbers\NumberUtility.cs" />
+    <Compile Include="OSS\Numbers\RadixMath.cs" />
+    <Compile Include="OSS\Numbers\SimpleRadixMath.cs" />
+    <Compile Include="OSS\Numbers\TrappableRadixMath.cs" />
     <Compile Include="response\CTAPResponse.cs" />
     <Compile Include="response\CTAPResponseAssertion.cs" />
     <Compile Include="response\CTAPResponseAttestation.cs" />
