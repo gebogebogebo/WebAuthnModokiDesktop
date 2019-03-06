@@ -46,8 +46,8 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                 // Verify
                 string certPem = CTAPVerify.ConvertCertificateDERtoPEM(attestation.AttStmtX5c);
-                var pubKeyPem = VerifyNew.GetPublicKeyPEMfromCert(certPem);
-                if( VerifyNew.VerifySignature(sigBase.ToArray(), pubKeyPem, attestation.AttStmtSig) == false) {
+                var pubKeyPem = BCVerify.GetPublicKeyPEMfromCert(certPem);
+                if( BCVerify.VerifySignature(sigBase.ToArray(), pubKeyPem, attestation.AttStmtSig) == false) {
                     // verify error
                     throw (new Exception("verify failed Signature"));
                 }
@@ -102,7 +102,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                 sigBase.AddRange(clientDataHash.ToList());
 
                 // Verify
-                if (VerifyNew.VerifySignature(sigBase.ToArray(), pubkeypem, assertion.Signature) == false) {
+                if (BCVerify.VerifySignature(sigBase.ToArray(), pubkeypem, assertion.Signature) == false) {
                     // verify error
                     throw (new Exception("verify failed Signature"));
                 }

@@ -187,7 +187,7 @@ namespace gebo.CTAP2
             var bG_y = new StringBuilder(256);
             var strSharedSecret = new StringBuilder(256);
 
-            int st = CreateSharedSecretNew.CreateSharedSecret(aG_x, aG_y, bG_x, bG_y, strSharedSecret);
+            int st = ECDH.CreateSharedSecret(aG_x, aG_y, bG_x, bG_y, strSharedSecret);
 
             // byte配列(32)にする
             var sharedSecret = Common.HexStringToBytes(strSharedSecret.ToString());
@@ -213,11 +213,7 @@ namespace gebo.CTAP2
             string key = Common.BytesToHexString(sharedSecret);
             string data = Common.BytesToHexString(pinsha16);
 
-            //var enc = new StringBuilder(256);
-            //int st = Aes256cbc_Enc(key, data, enc);
-            //var pinHashEnc = Common.HexStringToBytes(enc.ToString());
-
-            var pinHashEnc = Common.AES256CBC_Encrypt(sharedSecret, pinsha16);
+            var pinHashEnc = AES256CBC.Encrypt(sharedSecret, pinsha16);
 
             return (pinHashEnc);
         }
@@ -225,17 +221,7 @@ namespace gebo.CTAP2
         // newPinEnc: AES256-CBC(sharedSecret, IV = 0, newPin)
         public byte[] createNewPinEnc(byte[] sharedSecret, byte[] newpin64)
         {
-            byte[] newPinEnc = Common.AES256CBC_Encrypt(sharedSecret, newpin64);
-            /*
-            {
-                string key = Common.BytesToHexString(sharedSecret);
-                string data = Common.BytesToHexString(newpin64);
-                var enc = new StringBuilder(256);
-
-                int st = Aes256cbc_Enc(key, data, enc);
-                newPinEnc = Common.HexStringToBytes(enc.ToString());
-            }
-            */
+            byte[] newPinEnc = AES256CBC.Encrypt(sharedSecret, newpin64);
             return (newPinEnc);
         }
         public byte[] createNewPinEnc(byte[] sharedSecret, string newpin)
@@ -245,17 +231,7 @@ namespace gebo.CTAP2
 
         public byte[] createPinAuth(byte[] sharedSecret,byte[] cdh,byte[] pinTokenEnc)
         {
-            //var strPinTokenEnc = Common.BytesToHexString(pinTokenEnc);
-            //var strSharedSecret = Common.BytesToHexString(sharedSecret);
-            //var strPinToken = new StringBuilder(256);
-            //int ret = Aes256cbc_Dec(strSharedSecret, strPinTokenEnc, strPinToken);
-            //if( ret < 0) {
-            //    // Error
-            //    return null;
-            //}
-            //var pinToken = Common.HexStringToBytes(strPinToken.ToString());
-
-            var pinToken = Common.AES256CBC_Decrypt(sharedSecret, pinTokenEnc);
+            var pinToken = AES256CBC.Decrypt(sharedSecret, pinTokenEnc);
 
             // HMAC-SHA-256(pinToken, clientDataHash)
             byte[] pinAuth;
@@ -270,19 +246,7 @@ namespace gebo.CTAP2
         {
             var newpin64 = this.paddingPin64(newpin);
 
-            /*
-            var strSharedSecret = Common.BytesToHexString(sharedSecret);
-
-            var strNewPin64 = Common.BytesToHexString(newpin64);
-            var strNewPin64Enc = new StringBuilder(256);
-            int ret = Aes256cbc_Enc(strSharedSecret, strNewPin64, strNewPin64Enc);
-            if (ret < 0) {
-                // Error
-                return null;
-            }
-            var newPinEnc = Common.HexStringToBytes(strNewPin64Enc.ToString());
-            */
-            var newPinEnc = Common.AES256CBC_Encrypt(sharedSecret, newpin64);
+            var newPinEnc = AES256CBC.Encrypt(sharedSecret, newpin64);
 
             // HMAC-SHA-256(sharedSecret, newPinEnc)
             byte[] pinAuth;
@@ -299,20 +263,7 @@ namespace gebo.CTAP2
             byte[] newPinEnc = null;
             {
                 var newpin64 = this.paddingPin64(newpin);
-                /*
-                var strSharedSecret = Common.BytesToHexString(sharedSecret);
-
-                var strNewPin64 = Common.BytesToHexString(newpin64);
-                var strNewPin64Enc = new StringBuilder(256);
-                int ret = Aes256cbc_Enc(strSharedSecret, strNewPin64, strNewPin64Enc);
-                if (ret < 0) {
-                    // Error
-                    return null;
-                }
-                newPinEnc = Common.HexStringToBytes(strNewPin64Enc.ToString());
-                */
-                newPinEnc = Common.AES256CBC_Encrypt(sharedSecret, newpin64);
-
+                newPinEnc = AES256CBC.Encrypt(sharedSecret, newpin64);
             }
 
             // current pin

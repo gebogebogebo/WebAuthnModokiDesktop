@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Runtime.Serialization.Json;
-using System.Security.Cryptography;
 
 namespace gebo.CTAP2
 {
@@ -83,101 +78,6 @@ namespace gebo.CTAP2
             } else {
                 return false;
             }
-        }
-
-        internal static byte[] AES256CBC_Encrypt(byte[] key, byte[] data)
-        {
-            // 暗号化方式はAES
-            AesManaged aes = new AesManaged();
-            // 鍵の長さ
-            aes.KeySize = 256;
-            // ブロックサイズ（何文字単位で処理するか）
-            aes.BlockSize = 128;
-            // 暗号利用モード
-            aes.Mode = CipherMode.CBC;
-            // 初期化ベクトル(0x00×16byte)
-            aes.IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            aes.Key = key;
-            // パディング
-            aes.Padding = PaddingMode.None;
-
-            // 暗号化
-            var encdata = aes.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
-
-            return (encdata);
-        }
-
-        internal static byte[] AES256CBC_Decrypt(byte[] key,byte[] data)
-        {
-            // 暗号化方式はAES
-            AesManaged aes = new AesManaged();
-            // 鍵の長さ
-            aes.KeySize = 256;
-            // ブロックサイズ（何文字単位で処理するか）
-            aes.BlockSize = 128;
-            // 暗号利用モード
-            aes.Mode = CipherMode.CBC;
-            // 初期化ベクトル(0x00×16byte)
-            aes.IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            aes.Key = key;
-            // パディング
-            aes.Padding = PaddingMode.None;
-
-            var encdata = aes.CreateDecryptor().TransformFinalBlock(data, 0, data.Length);
-
-            return (encdata);
-        }
-
-    }
-
-    internal static class JsonUtility
-    {
-        /// 任意のオブジェクトを JSON メッセージへシリアライズします。
-        /// </summary>
-        public static string Serialize(object obj)
-        {
-            using (var stream = new MemoryStream()) {
-                var serializer = new DataContractJsonSerializer(obj.GetType());
-                serializer.WriteObject(stream, obj);
-                return Encoding.UTF8.GetString(stream.ToArray());
-            }
-        }
-        public static bool SerializeFile(object obj,string pathname)
-        {
-            var json = Serialize(obj);
-            File.WriteAllText(pathname,json);
-            return (true);
-        }
-
-        /// <summary>
-        /// Jsonメッセージをオブジェクトへデシリアライズします。
-        /// </summary>
-        public static T Deserialize<T>(string message)
-        {
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(message))) {
-
-                var setting = new DataContractJsonSerializerSettings()
-                {
-                    UseSimpleDictionaryFormat = true,
-                };
-
-                var serializer = new DataContractJsonSerializer(typeof(T),setting);
-
-                return (T)serializer.ReadObject(stream);
-            }
-        }
-
-        public static T DeserializeFile<T>(string pathname)
-        {
-            string json = "";
-            var fs = new StreamReader(pathname);
-            try {
-                json = fs.ReadToEnd();
-            } finally {
-                fs.Close();
-            }
-
-            return(JsonUtility.Deserialize<T>(json));
         }
 
     }

@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace gebo.CTAP2
 {
-    public class CreateSharedSecretNew
+    internal class ECDH
     {
         public static int CreateSharedSecret(
                     string aG_x, string aG_y,               // (I )64文字

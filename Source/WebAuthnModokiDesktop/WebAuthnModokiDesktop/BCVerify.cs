@@ -8,7 +8,7 @@ using Org.BouncyCastle.Security;
 
 namespace gebo.CTAP2.WebAuthnModokiDesktop
 {
-    public class VerifyNew
+    public class BCVerify
     {
         public static string GetPublicKeyPEMfromCert(string certPem)
         {
