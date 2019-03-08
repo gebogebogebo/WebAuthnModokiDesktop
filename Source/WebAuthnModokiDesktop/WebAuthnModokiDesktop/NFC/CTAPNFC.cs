@@ -74,19 +74,21 @@ namespace gebo.CTAP2
             try {
                 // 8.2.5. Fragmentation
                 var sends = new List<byte[]>();
-                if( send.Length > 0xff) {
-                    List<byte> tmp = new List<byte>();
-                    tmp.AddRange(send);
+                if( send != null) {
+                    if (send.Length > 0xff) {
+                        List<byte> tmp = new List<byte>();
+                        tmp.AddRange(send);
 
-                    var devides = tmp.Select((v, i) => new { v, i })
-                        .GroupBy(x => x.i / 0xff)
-                        .Select(g => g.Select(x => x.v));
+                        var devides = tmp.Select((v, i) => new { v, i })
+                            .GroupBy(x => x.i / 0xff)
+                            .Select(g => g.Select(x => x.v));
 
-                    foreach( var dev in devides) {
-                        sends.Add(dev.ToArray());
+                        foreach (var dev in devides) {
+                            sends.Add(dev.ToArray());
+                        }
+                    } else {
+                        sends.Add(send);
                     }
-                }else {
-                    sends.Add(send);
                 }
 
                 using (var reader = new ICReader(ToStringList(nfcParams))) {
