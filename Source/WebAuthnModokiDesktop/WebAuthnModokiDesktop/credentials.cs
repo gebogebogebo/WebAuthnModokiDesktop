@@ -121,7 +121,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                 var ctap = new CTAPauthenticatorClientPIN();
                 var st = await ctap.GetKeyAgreement(devParam);
                 status.commands.Add(new CommandStatus.CommandInfo(ctap, st));
-                if (st.Status != 0x00) {
+                if (st.Status != 0) {
                     throw (new Exception("GetKeyAgreement"));
                 }
 
@@ -135,7 +135,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                 var st2 = await ctap.SetPIN(devParam, pinAuth, newPinEnc);
                 status.commands.Add(new CommandStatus.CommandInfo(ctap, st2));
-                if (st2.Status != 0x00) {
+                if (st2.Status != 0) {
                     throw (new Exception("SetPIN"));
                 }
 
@@ -154,7 +154,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                 var ctap = new CTAPauthenticatorClientPIN();
                 var st = await ctap.GetKeyAgreement(devParam);
                 status.commands.Add(new CommandStatus.CommandInfo(ctap, st));
-                if (st.Status != 0x00) {
+                if (st.Status != 0) {
                     throw (new Exception("GetKeyAgreement"));
                 }
 
@@ -174,7 +174,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                 var st2 = await ctap.ChangePIN(devParam, pinAuth, newPinEnc, pinHashEnc);
                 status.commands.Add(new CommandStatus.CommandInfo(ctap, st2));
-                if (st2.Status != 0x00) {
+                if (st2.Status != 0) {
                     throw (new Exception("ChangePIN"));
                 }
 

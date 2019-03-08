@@ -112,7 +112,7 @@ namespace testUI01
                     @"}," +
                     @"pubKeyCredParams: [{type: 'public-key',alg: -7}]," +
                     @"attestation: 'direct'," +
-                    @"timeout: 60000," +
+                    @"timeout: 10000," +
                     @"authenticatorSelection : {" +
                         string.Format($"requireResidentKey : {requireResidentKey},") +
                         @"authenticatorAttachment : 'cross-platform'," +

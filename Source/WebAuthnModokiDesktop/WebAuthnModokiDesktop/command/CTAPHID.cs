@@ -25,7 +25,10 @@ namespace gebo.CTAP2
 
     internal class CTAPHID : IDisposable
 	{
-		private const byte CTAP_FRAME_INIT = 0x80;
+        public int ReceiveResponseTotalTimeoutMs = 0;
+        public bool isReceiveResponseTotalTimeout = false;
+
+        private const byte CTAP_FRAME_INIT = 0x80;
 		private const int CTAP_RPT_SIZE = 64;
 		private const byte STAT_ERR = 0xbf;
 
@@ -40,7 +43,7 @@ namespace gebo.CTAP2
 
         private const uint BROADCAST_CID = 0xffffffff;
 
-		private const int HidTimeoutMs = 1000;
+		private const int CallTimeoutMs = 1000;
 
 		private readonly Random random = new Random();
 
@@ -115,7 +118,7 @@ namespace gebo.CTAP2
                 }
                 var report = hidDevice.CreateReport();
                 report.Data = packet.ToArray();
-                var sendst = await hidDevice.WriteReportAsync(report, HidTimeoutMs);
+                var sendst = await hidDevice.WriteReportAsync(report, CallTimeoutMs);
                 Console.WriteLine($"send Packet({sendst}): ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
 
             }
@@ -137,7 +140,7 @@ namespace gebo.CTAP2
                 var report = hidDevice.CreateReport();
                 report.Data = packet.ToArray();
 
-				if (!await hidDevice.WriteReportAsync(report, HidTimeoutMs))
+				if (!await hidDevice.WriteReportAsync(report, CallTimeoutMs))
 				{
 					throw new Exception("Error writing to device");
 				}
@@ -155,8 +158,16 @@ namespace gebo.CTAP2
             HidReport report = null;
             var resp = Encoding.ASCII.GetBytes(".");
 
-            for (; ; ) {
-                report = await hidDevice.ReadReportAsync(HidTimeoutMs);
+            int loop_n = 999;
+            int keepalivesleepms = 100;
+            bool isGet = false;
+
+            if ( this.ReceiveResponseTotalTimeoutMs > 0 && keepalivesleepms > 0 ) {
+                loop_n = this.ReceiveResponseTotalTimeoutMs / keepalivesleepms;
+            }
+
+            for (int intIc = 0 ;intIc < loop_n ;intIc++ ) {
+                report = await hidDevice.ReadReportAsync(CallTimeoutMs);
 
                 if (report.ReadStatus != HidDeviceData.ReadStatus.Success) {
                     throw new Exception("Error reading from device");
@@ -171,11 +182,17 @@ namespace gebo.CTAP2
                     throw new Exception("Error in response header");
                 } else if(resp[4] == (byte)(CTAP_FRAME_INIT | CTAPHID_KEEPALIVE)) {
                     Console.WriteLine("keep alive");
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(keepalivesleepms);
                     continue;
                 }
-
+                isGet = true;
                 break;
+            }
+            if(isGet == false) {
+                // timeout
+                Console.WriteLine("timeout");
+                isReceiveResponseTotalTimeout = true;
+                return null;
             }
 
 			var dataLength = (report.Data[5] << 8) + report.Data[6];
@@ -186,7 +203,7 @@ namespace gebo.CTAP2
 			var seq = 0;
 			while (dataLength > 0)
 			{
-				report = await hidDevice.ReadReportAsync(HidTimeoutMs);
+				report = await hidDevice.ReadReportAsync(CallTimeoutMs);
 
 				if (report.ReadStatus != HidDeviceData.ReadStatus.Success)
 				{
@@ -210,8 +227,7 @@ namespace gebo.CTAP2
 			}
 
 			var result = payloadData.ToArray();
-
-			return result;
+            return result;
 		}
 
 		public void Dispose()
@@ -219,7 +235,7 @@ namespace gebo.CTAP2
 			hidDevice.CloseDevice();
 		}
 
-        public static async Task<byte[]> SendCommandandResponse(List<HidParam> hidParams, byte[] send)
+        public static async Task<byte[]> SendCommandandResponse(List<HidParam> hidParams, byte[] send,int timeoutms)
         {
             byte[] res = null;
 
@@ -230,7 +246,12 @@ namespace gebo.CTAP2
                     return null;
                 }
                 using (var openedDevice = await CTAPHID.OpenAsync(hidDevice)) {
+                    openedDevice.ReceiveResponseTotalTimeoutMs = timeoutms;
                     res = await openedDevice.CborAsync(send);
+                    if( openedDevice.isReceiveResponseTotalTimeout == true) {
+                        // timeout
+                        int a = 0;
+                    }
                 }
 
             } catch (Exception) {

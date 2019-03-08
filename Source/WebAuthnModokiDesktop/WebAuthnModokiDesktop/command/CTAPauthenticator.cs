@@ -21,7 +21,13 @@ namespace gebo.CTAP2
             {
 
             }
-            public byte Status { get; set; }
+
+            public int Status { get; set; }
+
+            // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-client-to-authenticator-protocol-v2.0-id-20180227.html#error-responses
+            // 6.3. Status codes
+            public byte StatusCodeCTAP { get; set; }
+
             public CBORObject ResponseDataCbor { get; set; }
         }
 
@@ -53,7 +59,7 @@ namespace gebo.CTAP2
             return (name);
         }
 
-        protected async Task<CTAPResponseInner> sendCommandandResponse(DevParam devParam, byte command, CBORObject payload)
+        protected async Task<CTAPResponseInner> sendCommandandResponse(DevParam devParam, byte command, CBORObject payload,int timeoutms=0)
         {
             byte[] send = null;
 
@@ -67,10 +73,10 @@ namespace gebo.CTAP2
             } else {
                 send = new byte[] { command };
             }
-            return (await sendCommandandResponse(devParam, send));
+            return (await sendCommandandResponse(devParam, send, timeoutms));
         }
 
-        protected static async Task<CTAPResponseInner> sendCommandandResponse(DevParam devParam, byte[] send)
+        protected static async Task<CTAPResponseInner> sendCommandandResponse(DevParam devParam, byte[] send,int timeoutms)
         {
             var response = new CTAPResponseInner();
 
@@ -78,7 +84,7 @@ namespace gebo.CTAP2
 
             // HID
             if ( devParam.hidparams != null) {
-                byteresponse = await CTAPHID.SendCommandandResponse(devParam.hidparams, send);
+                byteresponse = await CTAPHID.SendCommandandResponse(devParam.hidparams, send, timeoutms);
             }
 
             // NFC
@@ -87,10 +93,11 @@ namespace gebo.CTAP2
             }
 
             if (byteresponse == null) {
-                response.Status = 0xff;
+                response.Status = -1;
+                response.StatusCodeCTAP = 0x00;
                 return response;
             }
-            response.Status = byteresponse[0];
+            response.StatusCodeCTAP = byteresponse[0];
 
             if (byteresponse.Length > 1) {
                 var cobrbyte = byteresponse.Skip(1).ToArray();

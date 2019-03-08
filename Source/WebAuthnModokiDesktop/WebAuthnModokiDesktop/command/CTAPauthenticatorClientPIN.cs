@@ -37,7 +37,7 @@ namespace gebo.CTAP2
                 Console.WriteLine(json);
                 response.ResponseDataJson = json;
             }
-            response.Status = resi.Status;
+            response.Status = resi.StatusCodeCTAP;
 
             return (response);
         }
@@ -67,7 +67,7 @@ namespace gebo.CTAP2
 
                     Authenticator_KeyAgreement = new KeyAgreement(resi.ResponseDataCbor);
                 }
-                response.Status = resi.Status;
+                response.Status = resi.StatusCodeCTAP;
             }
 
             return (response);

@@ -11,9 +11,9 @@ namespace gebo.CTAP2
     [DataContract]
     public class CTAPResponse
     {
-        private byte _status;
+        private int _status;
         [DataMember()]
-        public byte Status
+        public int Status
         {
             get {
                 return this._status;
@@ -32,14 +32,18 @@ namespace gebo.CTAP2
 
         public CTAPResponse()
         {
-            Status = 0x00;
+            Status = 0;
             CommandDataJson = "";
             ResponseDataJson = "";
         }
 
         public CTAPResponse(CTAPauthenticator.CTAPResponseInner resi)
         {
-            Status = resi.Status;
+            if( resi.Status < 0) {
+                Status = resi.Status;
+            } else {
+                Status = resi.StatusCodeCTAP;
+            }
             if (resi.ResponseDataCbor == null) {
                 Console.WriteLine("ResponseDataCbor is null");        // log
                 //throw new Exception("ResponseDataCbor is null");

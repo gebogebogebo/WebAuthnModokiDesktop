@@ -46,6 +46,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                 ctap.UserName = publickey.user.name;
                 ctap.UserDisplayName = publickey.user.displayName;
                 ctap.ClientDataHash = CTAPauthenticator.CreateClientDataHash(publickey.challenge);
+                ctap.TimeoutMs = publickey.timeout;
 
                 ctap.Option_rk = publickey.authenticatorSelection.requireResidentKey;
                 if( publickey.authenticatorSelection.userVerification == UserVerificationRequirement.discouraged) {
@@ -61,7 +62,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                     var st1 = await ctap2.GetKeyAgreement(devParam);
                     status.commands.Add(new CommandStatus.CommandInfo(ctap2, st1));
-                    if (st1.Status != 0x00) {
+                    if (st1.Status != 0) {
                         throw (new Exception("GetKeyAgreement"));
                     }
 
@@ -71,7 +72,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                     var token = await ctap2.GetPINToken(devParam, pinHashEnc);
                     status.commands.Add(new CommandStatus.CommandInfo(ctap2, token));
-                    if (token.Status != 0x00) {
+                    if (token.Status != 0) {
                         throw (new Exception("GetPINToken"));
                     }
 
@@ -80,7 +81,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                 var att = await ctap.SendAndResponse(devParam);
                 status.commands.Add(new CommandStatus.CommandInfo(ctap, att));
-                if (att.Status != 0x00) {
+                if (att.Status != 0) {
                     throw (new Exception("MakeCredential"));
                 }
 

@@ -38,7 +38,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                     var ctap = new CTAPauthenticatorGetInfo();
                     var ret = await ctap.SendAndResponse(devParam);
                     status.commands.Add(new CommandStatus.CommandInfo(ctap, ret));
-                    if (ret.Status != 0x00) {
+                    if (ret.Status != 0) {
                         throw (new Exception("GetInfo"));
                     }
                     status.AuthenticatorInfo = ret;
@@ -49,7 +49,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                     var ctap = new CTAPauthenticatorClientPIN();
                     var ret = await ctap.GetRetries(devParam);
                     status.commands.Add(new CommandStatus.CommandInfo(ctap, ret));
-                    if (ret.Status != 0x00) {
+                    if (ret.Status != 0) {
                         throw (new Exception("GetRetries"));
                     }
                     status.PinRetryCount = ctap.RetryCount;

@@ -68,7 +68,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                     var st1 = await ctap2.GetKeyAgreement(devParam);
                     status.commands.Add(new CommandStatus.CommandInfo(ctap2, st1));
-                    if (st1.Status != 0x00) {
+                    if (st1.Status != 0) {
                         throw (new Exception("GetKeyAgreement"));
                     }
 
@@ -78,7 +78,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                     var token = await ctap2.GetPINToken(devParam, pinHashEnc);
                     status.commands.Add(new CommandStatus.CommandInfo(ctap2, token));
-                    if (token.Status != 0x00) {
+                    if (token.Status != 0) {
                         throw (new Exception("GetPINToken"));
                     }
 
@@ -87,7 +87,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 
                 var ret = await ctap.SendAndResponse(devParam);
                 status.commands.Add(new CommandStatus.CommandInfo(ctap, ret));
-                if (ret.Status != 0x00) {
+                if (ret.Status != 0) {
                     throw (new Exception("GetAssertion"));
                 }
                 status.assertions.Add(ret);
@@ -97,7 +97,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                         var next = new CTAPauthenticatorGetNextAssertion();
                         var nextret = await next.SendAndResponse(devParam);
                         status.commands.Add(new CommandStatus.CommandInfo(next, nextret));
-                        if (ret.Status != 0x00) {
+                        if (ret.Status != 0) {
                             throw (new Exception("GetNextAssertion"));
                         }
                         status.assertions.Add(nextret);
