@@ -42,9 +42,10 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                 var ctap = new CTAPauthenticatorGetAssertion();
                 ctap.RpId = rpid;
                 ctap.ClientDataHash = CTAPauthenticator.CreateClientDataHash(publickey.challenge);
+                ctap.Timeout = publickey.timeout;
 
                 // credential-id
-                if( publickey.allowCredentials != null &&
+                if ( publickey.allowCredentials != null &&
                     publickey.allowCredentials.Count > 0 &&
                     publickey.allowCredentials[0] != null &&
                     publickey.allowCredentials[0].id != null &&

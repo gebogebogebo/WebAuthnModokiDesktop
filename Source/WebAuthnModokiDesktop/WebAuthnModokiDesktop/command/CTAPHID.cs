@@ -159,7 +159,7 @@ namespace gebo.CTAP2
             var resp = Encoding.ASCII.GetBytes(".");
 
             int loop_n = 999;
-            int keepalivesleepms = 100;
+            int keepalivesleepms = 300;
             bool isGet = false;
 
             if ( this.ReceiveResponseTotalTimeoutMs > 0 && keepalivesleepms > 0 ) {
@@ -182,7 +182,7 @@ namespace gebo.CTAP2
                     throw new Exception("Error in response header");
                 } else if(resp[4] == (byte)(CTAP_FRAME_INIT | CTAPHID_KEEPALIVE)) {
                     Console.WriteLine("keep alive");
-                    System.Threading.Thread.Sleep(keepalivesleepms);
+                    await Task.Delay(keepalivesleepms);
                     continue;
                 }
                 isGet = true;
@@ -235,11 +235,22 @@ namespace gebo.CTAP2
 			hidDevice.CloseDevice();
 		}
 
-        public static async Task<byte[]> SendCommandandResponse(List<HidParam> hidParams, byte[] send,int timeoutms)
+        public class SendCommandandResponseResult
         {
-            byte[] res = null;
+            public byte[] responseData { get; set; }
+            public bool isTimeout { get; set; }
+            public SendCommandandResponseResult()
+            {
+                responseData = null;
+                isTimeout = false;
+            }
+        }
 
+        public static async Task<SendCommandandResponseResult> SendCommandandResponse(List<HidParam> hidParams, byte[] send,int timeoutms)
+        {
+            var result = new SendCommandandResponseResult();
             IHidDevice hidDevice = null;
+
             try {
                 hidDevice = CTAPHID.find(hidParams);
                 if (hidDevice == null) {
@@ -247,11 +258,8 @@ namespace gebo.CTAP2
                 }
                 using (var openedDevice = await CTAPHID.OpenAsync(hidDevice)) {
                     openedDevice.ReceiveResponseTotalTimeoutMs = timeoutms;
-                    res = await openedDevice.CborAsync(send);
-                    if( openedDevice.isReceiveResponseTotalTimeout == true) {
-                        // timeout
-                        int a = 0;
-                    }
+                    result.responseData = await openedDevice.CborAsync(send);
+                    result.isTimeout = openedDevice.isReceiveResponseTotalTimeout;
                 }
 
             } catch (Exception) {
@@ -261,7 +269,7 @@ namespace gebo.CTAP2
                     hidDevice.Dispose();
                 }
             }
-            return (res);
+            return (result);
         }
 
         public static HidDevice find(List<HidParam> hidparams)

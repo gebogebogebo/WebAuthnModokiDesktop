@@ -183,7 +183,7 @@ namespace testUI01
 
             string json =
                "{" +
-                    string.Format($"timeout : 60000,") +
+                    string.Format($"timeout : 10000,") +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                     string.Format($"rpId : '{rpid}',") +
                    @"allowCredentials : [{" +

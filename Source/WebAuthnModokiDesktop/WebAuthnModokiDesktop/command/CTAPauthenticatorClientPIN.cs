@@ -13,8 +13,6 @@ namespace gebo.CTAP2
         public int RetryCount { get; private set; }
         public async Task<CTAPResponse> GetRetries(DevParam devParam)
         {
-            var response = new CTAPResponse();
-
             var cbor = CBORObject.NewMap();
 
             // 0x01:pinProtocol = 1固定
@@ -32,12 +30,8 @@ namespace gebo.CTAP2
                         break;
                     }
                 }
-
-                var json = resi.ResponseDataCbor.ToJSONString();
-                Console.WriteLine(json);
-                response.ResponseDataJson = json;
             }
-            response.Status = resi.StatusCodeCTAP;
+            var response = new CTAPResponse(resi);
 
             return (response);
         }
@@ -47,8 +41,6 @@ namespace gebo.CTAP2
 
         public async Task<CTAPResponse> GetKeyAgreement(DevParam devParam)
         {
-            var response = new CTAPResponse();
-
             var cbor = CBORObject.NewMap();
 
             // 0x01:pinProtocol = 1固定
@@ -57,17 +49,11 @@ namespace gebo.CTAP2
             // 0x02:subCommand = 0x02:getKeyAgreement
             cbor.Add(0x02, 0x02);
 
-            {
-                var resi = await sendCommandandResponse(devParam, 0x06, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x06, cbor);
+            var response = new CTAPResponse(resi);
 
-                if (resi.ResponseDataCbor != null) {
-                    var json = resi.ResponseDataCbor.ToJSONString();
-                    Console.WriteLine(json);
-                    response.ResponseDataJson = json;
-
-                    Authenticator_KeyAgreement = new KeyAgreement(resi.ResponseDataCbor);
-                }
-                response.Status = resi.StatusCodeCTAP;
+            if (resi.ResponseDataCbor != null) {
+                Authenticator_KeyAgreement = new KeyAgreement(resi.ResponseDataCbor);
             }
 
             return (response);

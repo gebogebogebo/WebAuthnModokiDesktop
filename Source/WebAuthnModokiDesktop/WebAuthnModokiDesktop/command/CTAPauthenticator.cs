@@ -84,7 +84,14 @@ namespace gebo.CTAP2
 
             // HID
             if ( devParam.hidparams != null) {
-                byteresponse = await CTAPHID.SendCommandandResponse(devParam.hidparams, send, timeoutms);
+                var res = await CTAPHID.SendCommandandResponse(devParam.hidparams, send, timeoutms);
+                if( res != null) {
+                    if (res.isTimeout == true) {
+                        response.Status = -2;
+                        return response;
+                    }
+                    byteresponse = res.responseData;
+                }
             }
 
             // NFC
@@ -94,7 +101,6 @@ namespace gebo.CTAP2
 
             if (byteresponse == null) {
                 response.Status = -1;
-                response.StatusCodeCTAP = 0x00;
                 return response;
             }
             response.StatusCodeCTAP = byteresponse[0];

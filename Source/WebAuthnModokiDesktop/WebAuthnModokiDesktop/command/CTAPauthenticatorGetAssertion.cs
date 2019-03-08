@@ -20,6 +20,8 @@ namespace gebo.CTAP2
         public bool Option_uv { get; set; }
         [DataMember()]
         public byte[] PinAuth { get; set; }
+        [DataMember]
+        public int Timeout { get; set; }
 
         public byte[] ClientDataHash { get; set; }
 
@@ -62,7 +64,7 @@ namespace gebo.CTAP2
                 cbor.Add(0x07, 1);
             }
 
-            var resi = await sendCommandandResponse(devParam, 0x02, cbor);
+            var resi = await sendCommandandResponse(devParam, 0x02, cbor,this.Timeout);
 
             var response = new CTAPResponseAssertion(resi);
             response.CommandDataJson = this.payloadJson;

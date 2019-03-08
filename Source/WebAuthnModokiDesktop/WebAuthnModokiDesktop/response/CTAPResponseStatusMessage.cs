@@ -13,7 +13,8 @@ namespace gebo.CTAP2
             string msg = "";
             if (status < 0) {
                 switch (status) {
-                    case -1: msg = "-1 デバイス無し"; break;
+                    case -1: msg = "-1 Device Not Found"; break;
+                    case -2: msg = "-2 Timeout"; break;
                 }
             } else {
                 switch (status) {
