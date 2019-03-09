@@ -1,21 +1,23 @@
 @startuml
-title <size:18>Module</size>
+title Module
 
 component userApl.exe as userApl <<C#>>
 
 package "WebAuthnModokiDesktop.dll" {
-    component "WebAuthnModokiDesktop" as WebAuthnModokiDesktop <<C#>>
-    component "PeterO.Cbor 3.4.0" as CBOR <<OSS>>
-    component "PeterO.Numbers 1.1.2" as Numbers <<OSS>>
-    component "hidlibrary 3.2.46" as HidLibrary <<OSS>>
+    (gebo.CTAP2.WebAuthnModokiDesktop\ngebo.CTAP2\ngebo.NFC) as WebAuthnModokiDesktop 
+    (PeterO.Cbor) as CBOR <<PeterO.Cbor 3.4.0>>
+    (PeterO.Numbers) as Numbers <<PeterO.Numbers 1.1.2>>
+    (HidLibrary) as HidLibrary <<hidlibrary 3.2.46>>
 }   
 
-component Newtonsoft.Json.dll as Newtonsoft.Json <<Newtonsoft.Json 12.0.1>>
+component "BouncyCastle.dll" as Bouncy <<Bouncy Castle 1.8.5>>
+component "Newtonsoft.Json.dll" as Newtonsoft.Json <<Newtonsoft.Json 12.0.1>>
 
 userApl ..> WebAuthnModokiDesktop
 WebAuthnModokiDesktop ..> HidLibrary
 WebAuthnModokiDesktop ..> CBOR
 CBOR ..> Numbers
-WebAuthnModokiDesktop ..> Newtonsoft.Json
+WebAuthnModokiDesktop --> Newtonsoft.Json
+WebAuthnModokiDesktop --> Bouncy
 
 @enduml
