@@ -18,10 +18,10 @@ namespace testUI02
         public MainWindow()
         {
             InitializeComponent();
-            devParam = DevParam.getDefaultParams();
+            devParam = DevParam.GetDefaultParams();
         }
 
-        private void logResponse(WebAuthnModokiDesktop.commandstatus res)
+        private void logResponse(gebo.CTAP2.WebAuthnModokiDesktop.CommandStatus res)
         {
             string msg = "<commandstatus>\r\n" + "isSuccess=" + res.isSuccess + " , " + "msg=" + res.msg + "\r\n";
             log(msg);
@@ -64,7 +64,7 @@ namespace testUI02
         {
             log("");
             log("<Info>");
-            var response = await WebAuthnModokiDesktop.credentials.info(devParam);
+            var response = await gebo.CTAP2.WebAuthnModokiDesktop.Credentials.Info(devParam);
             logResponse(response);
             if( response.isSuccess == true) {
                 MessageBox.Show("Success!\r\n\r\nHID=" + response.HidInfo+"\r\nNFC=" + response.NfcInfo);
@@ -114,7 +114,7 @@ namespace testUI02
                     "}," +
                     string.Format($"challenge:[{string.Join(",", challenge)}],") +
                  "}";
-            var response = await WebAuthnModokiDesktop.credentials.create(devParam, json, pin);
+            var response = await gebo.CTAP2.WebAuthnModokiDesktop.Credentials.Create(devParam, json, pin);
             if (response.isSuccess == true) {
                 log("---");
                 log("Registration successful!");
@@ -132,7 +132,7 @@ namespace testUI02
 
             if( response.isSuccess == true) {
                 if( checkRegisterVerify.IsChecked == true) {
-                    if (WebAuthnModokiDesktop.CTAPVerify.Verify(response) == false) {
+                    if (gebo.CTAP2.WebAuthnModokiDesktop.CTAPVerify.Verify(response) == false) {
                         log("---");
                         log("Registration Verify failed!");
                         log("---");
@@ -184,7 +184,7 @@ namespace testUI02
                     string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(devParam, json, pin);
+            var response = await gebo.CTAP2.WebAuthnModokiDesktop.Credentials.Get(devParam, json, pin);
 
             if(response.isSuccess == true) {
                 log("---");
@@ -193,7 +193,7 @@ namespace testUI02
                 labeLoginResult.Content = "successful!";
 
                 if (checkLoginVerify.IsChecked == true) {
-                    if (WebAuthnModokiDesktop.CTAPVerify.Verify(response,this.CredentialPublicKeyByte) == false) {
+                    if (gebo.CTAP2.WebAuthnModokiDesktop.CTAPVerify.Verify(response,this.CredentialPublicKeyByte) == false) {
                         log("---");
                         log("Authentication Verify failed!");
                         log("---");
@@ -241,7 +241,7 @@ namespace testUI02
                    string.Format($"userVerification : '{uv}',") +
                 "}";
 
-            var response = await WebAuthnModokiDesktop.credentials.get(devParam, json, pin);
+            var response = await gebo.CTAP2.WebAuthnModokiDesktop.Credentials.Get(devParam, json, pin);
 
             if (response.isSuccess == true) {
                 log("---");
