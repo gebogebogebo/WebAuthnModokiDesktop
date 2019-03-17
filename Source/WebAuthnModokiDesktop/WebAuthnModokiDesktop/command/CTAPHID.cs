@@ -159,7 +159,7 @@ namespace gebo.CTAP2
             var resp = Encoding.ASCII.GetBytes(".");
 
             int loop_n = 999;
-            int keepalivesleepms = 300;
+            int keepalivesleepms = 100;
             bool isGet = false;
 
             if ( this.ReceiveResponseTotalTimeoutMs > 0 && keepalivesleepms > 0 ) {

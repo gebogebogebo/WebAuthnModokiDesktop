@@ -106,11 +106,15 @@ namespace gebo.CTAP2
             response.StatusCodeCTAP = byteresponse[0];
 
             if (byteresponse.Length > 1) {
-                var cobrbyte = byteresponse.Skip(1).ToArray();
-                response.ResponseDataCbor = CBORObject.DecodeFromBytes(cobrbyte, CBOREncodeOptions.Default);
+                try {
+                    var cobrbyte = byteresponse.Skip(1).ToArray();
+                    response.ResponseDataCbor = CBORObject.DecodeFromBytes(cobrbyte, CBOREncodeOptions.Default);
 
-                var json = response.ResponseDataCbor.ToJSONString();
-                Console.WriteLine($"Recv: {json}");
+                    var json = response.ResponseDataCbor.ToJSONString();
+                    Console.WriteLine($"Recv: {json}");
+                } catch (Exception ex) {
+                    Console.WriteLine($"CBOR DecordError:{ex.Message}");
+                }
             }
 
             return (response);

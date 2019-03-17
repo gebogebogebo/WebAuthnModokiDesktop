@@ -66,6 +66,8 @@ namespace gebo.CTAP2
                     case 0xEF: msg = "0xEF CTAP2_ERR_EXTENSION_LAST Extension specific error."; break;
                     case 0xF0: msg = "0xF0 CTAP2_ERR_VENDOR_FIRST Vendor specific error."; break;
                     case 0xff: msg = "0xFF CTAP2_ERR_VENDOR_LAST   Vendor specific error."; break;
+                    // CTAP仕様にない、謎のステータス
+                    case 0x6A: msg = "0x6A BioPass UnKnown Error.Please instead of a USB port"; break;
                 }
             }
             return (msg);
