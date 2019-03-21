@@ -45,12 +45,12 @@ namespace gebo.CTAP2
                 Status = resi.StatusCodeCTAP;
             }
             if (resi.ResponseDataCbor == null) {
-                Console.WriteLine("ResponseDataCbor is null");        // log
+                System.Diagnostics.Debug.WriteLine("ResponseDataCbor is null");        // log
                 //throw new Exception("ResponseDataCbor is null");
                 return;
             }
             ResponseDataJson = resi.ResponseDataCbor.ToJSONString();
-            Console.WriteLine(ResponseDataJson);        // log
+            System.Diagnostics.Debug.WriteLine(ResponseDataJson);        // log
         }
 
         protected bool getKeyValueAsBool(CBORObject obj, string key)

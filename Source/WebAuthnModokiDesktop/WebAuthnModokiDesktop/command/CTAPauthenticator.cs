@@ -66,7 +66,7 @@ namespace gebo.CTAP2
             payloadJson = string.Format($"[0x{command:X2}]({getCommandName(command)})");
             if (payload != null) {
                 payloadJson = payloadJson + payload.ToJSONString();
-                Console.WriteLine($"Send: {payloadJson}");
+                System.Diagnostics.Debug.WriteLine($"Send: {payloadJson}");
 
                 var payloadb = payload.EncodeToBytes();
                 send = new byte[] { command }.Concat(payloadb).ToArray();
@@ -111,9 +111,9 @@ namespace gebo.CTAP2
                     response.ResponseDataCbor = CBORObject.DecodeFromBytes(cobrbyte, CBOREncodeOptions.Default);
 
                     var json = response.ResponseDataCbor.ToJSONString();
-                    Console.WriteLine($"Recv: {json}");
+                    System.Diagnostics.Debug.WriteLine($"Recv: {json}");
                 } catch (Exception ex) {
-                    Console.WriteLine($"CBOR DecordError:{ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"CBOR DecordError:{ex.Message}");
                 }
             }
 

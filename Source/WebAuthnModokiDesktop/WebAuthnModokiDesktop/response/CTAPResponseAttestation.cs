@@ -110,7 +110,7 @@ namespace gebo.CTAP2
                 CredentialPublicKeyByte = data.Skip(index).ToArray();
                 var credentialPublicKeyCobr = CBORObject.DecodeFromBytes(CredentialPublicKeyByte, CBOREncodeOptions.Default);
                 CredentialPublicKey = credentialPublicKeyCobr.ToJSONString();
-                Console.WriteLine("credentialPublicKeyCobr:" + CredentialPublicKey);
+                System.Diagnostics.Debug.WriteLine("credentialPublicKeyCobr:" + CredentialPublicKey);
             }
 
             AuthData = data;
@@ -119,7 +119,7 @@ namespace gebo.CTAP2
         private void parseAttstmt(CBORObject attestationStatementCbor)
         {
             var attestationStatement = attestationStatementCbor.ToJSONString();
-            Console.WriteLine("attestationStatement:" + attestationStatement);
+            System.Diagnostics.Debug.WriteLine("attestationStatement:" + attestationStatement);
 
             foreach (var key in attestationStatementCbor.Keys) {
                 var keyVal = key.AsString();

@@ -27,12 +27,37 @@ namespace testUI04
             InitializeComponent();
         }
 
-        private void buttonRegist_Click(object sender, RoutedEventArgs e)
+        private void log(string log)
         {
+            textLog.Text = textLog.Text + log + "\r\n";
         }
 
-        private void buttonLoad_Click(object sender, RoutedEventArgs e)
+        private string rpid = "CTAP2.gebo";
+        private string pin = "1234";
+        private async void buttonRegist_Click(object sender, RoutedEventArgs e)
         {
+            string ip = "";
+            string user = "";
+            string pass = "";
+
+            // create 
+            string text = $@"Cmdkey /generic:TERMSRV/{ip} /user:{user} /pass:{pass} & Start mstsc /v:{ip} & Timeout 2 & Cmdkey /delete:TERMSRV/{ip}";
+
+            var count = gebo.CTAP2.Util.CmdExecuter.CheckWriteBlockCount(text);
+            log($"Block Count = {count}");
+
+            var result = await gebo.CTAP2.Util.CmdExecuter.RegisterCmd(rpid, pin,text);
+            log($"result = {result}");
+        }
+
+        private async void buttonLoad_Click(object sender, RoutedEventArgs e)
+        {
+            log($"read-start");
+
+            var result = await gebo.CTAP2.Util.CmdExecuter.Execute(rpid, pin);
+            log($"result = {result}");
+
+            log($"read-end");
         }
     }
 }

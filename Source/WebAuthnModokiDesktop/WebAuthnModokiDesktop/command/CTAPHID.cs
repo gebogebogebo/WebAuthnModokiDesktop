@@ -104,7 +104,7 @@ namespace gebo.CTAP2
 			var bc_h = (byte)(size >> 8 & 0xff);
 			var payloadData = data.Take(reportSize - 7).ToArray();
 
-            Console.WriteLine($"Payload data: {BitConverter.ToString(payloadData)}");
+            System.Diagnostics.Debug.WriteLine($"Payload data: {BitConverter.ToString(payloadData)}");
 
             {
                 var packet = new List<byte>();
@@ -119,7 +119,7 @@ namespace gebo.CTAP2
                 var report = hidDevice.CreateReport();
                 report.Data = packet.ToArray();
                 var sendst = await hidDevice.WriteReportAsync(report, CallTimeoutMs);
-                Console.WriteLine($"send Packet({sendst}): ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
+                System.Diagnostics.Debug.WriteLine($"send Packet({sendst}): ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
 
             }
 
@@ -144,7 +144,7 @@ namespace gebo.CTAP2
 				{
 					throw new Exception("Error writing to device");
 				}
-                Console.WriteLine($"send Packet: ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
+                System.Diagnostics.Debug.WriteLine($"send Packet: ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
 
                 remainingData = remainingData.Skip(reportSize - 5).ToArray();
 				seq++;
@@ -173,7 +173,7 @@ namespace gebo.CTAP2
                     throw new Exception("Error reading from device");
                 }
 
-                Console.WriteLine($"recv Packet: ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
+                System.Diagnostics.Debug.WriteLine($"recv Packet: ({report.Data.Length}):{BitConverter.ToString(report.Data)}");
 
                 resp = report.Data;
 
@@ -181,7 +181,7 @@ namespace gebo.CTAP2
                 if( resp[4] == (byte)(CTAP_FRAME_INIT | CTAPHID_ERROR)) {
                     throw new Exception("Error in response header");
                 } else if(resp[4] == (byte)(CTAP_FRAME_INIT | CTAPHID_KEEPALIVE)) {
-                    Console.WriteLine("keep alive");
+                    System.Diagnostics.Debug.WriteLine("keep alive");
                     await Task.Delay(keepalivesleepms);
                     continue;
                 }
@@ -190,7 +190,7 @@ namespace gebo.CTAP2
             }
             if(isGet == false) {
                 // timeout
-                Console.WriteLine("timeout");
+                System.Diagnostics.Debug.WriteLine("timeout");
                 isReceiveResponseTotalTimeout = true;
                 return null;
             }

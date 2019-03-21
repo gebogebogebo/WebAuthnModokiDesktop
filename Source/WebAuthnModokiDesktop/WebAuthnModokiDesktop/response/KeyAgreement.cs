@@ -53,7 +53,7 @@ namespace gebo.CTAP2
         private void parseCOSEkey(CBORObject cbor)
         {
             var attestationStatement = cbor.ToJSONString();
-            Console.WriteLine("keyAgreement:" + attestationStatement);
+            System.Diagnostics.Debug.WriteLine("keyAgreement:" + attestationStatement);
 
             foreach (var key in cbor.Keys) {
                 var keyVal = key.AsInt16();

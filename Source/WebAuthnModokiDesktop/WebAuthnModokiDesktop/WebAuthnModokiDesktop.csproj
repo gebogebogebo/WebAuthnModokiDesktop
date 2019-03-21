@@ -189,7 +189,7 @@
     <Compile Include="OSS\Numbers\RadixMath.cs" />
     <Compile Include="OSS\Numbers\SimpleRadixMath.cs" />
     <Compile Include="OSS\Numbers\TrappableRadixMath.cs" />
-    <Compile Include="ReaderWriter\ReaderWriter.cs" />
+    <Compile Include="Util\CmdExecuter.cs" />
     <Compile Include="response\CTAPResponse.cs" />
     <Compile Include="response\CTAPResponseAssertion.cs" />
     <Compile Include="response\CTAPResponseAttestation.cs" />
