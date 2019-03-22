@@ -27,6 +27,8 @@ namespace gebo.CTAP2
 
         public byte[] AuthData { get; set; }
 
+        public byte[] CredentialId { get; set; }
+
         public CTAPResponseAssertion(CTAPauthenticator.CTAPResponseInner resi) : base(resi)
         {
             SignCount = 0;
@@ -36,6 +38,7 @@ namespace gebo.CTAP2
             User_Id = new byte[0];
             User_Name = "";
             User_DisplayName = "";
+            CredentialId = new byte[0];
 
             if (resi.ResponseDataCbor != null) {
                 parse(resi.ResponseDataCbor);
@@ -48,6 +51,7 @@ namespace gebo.CTAP2
                 var keyVal = key.AsByte();
                 if (keyVal == 0x01) {
                     // 0x01:credential
+                    parseCredential(cbor[key]);
                 } else if (keyVal == 0x02) {
                     parseAuthData(cbor[key].GetByteString());
                 } else if (keyVal == 0x03) {
@@ -104,6 +108,18 @@ namespace gebo.CTAP2
                     User_Name = cbor[key].AsString();
                 } else if (keyVal == "displayName") {
                     User_DisplayName = cbor[key].AsString();
+                }
+            }
+
+        }
+
+        private void parseCredential(CBORObject cbor)
+        {
+            foreach (var key in cbor.Keys) {
+                var keyVal = key.AsString();
+                if (keyVal == "id") {
+                    CredentialId = cbor[key].GetByteString();
+                } else if (keyVal == "type") {
                 }
             }
 
