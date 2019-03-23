@@ -19,8 +19,12 @@ namespace gebo.CTAP2
         {
             public CTAPResponseInner()
             {
-
+                DevType = 0;
+                Status = 0;
             }
+
+            // ==1;HID,==2;NFC
+            public int DevType { get; set; }
 
             public int Status { get; set; }
 
@@ -90,6 +94,7 @@ namespace gebo.CTAP2
                         response.Status = -2;
                         return response;
                     }
+                    response.DevType = 1;
                     byteresponse = res.responseData;
                 }
             }
@@ -97,6 +102,9 @@ namespace gebo.CTAP2
             // NFC
             if (byteresponse == null && devParam.nfcparams != null) {
                 byteresponse = CTAPNFC.SendCommandandResponse(devParam.nfcparams, send);
+                if( byteresponse != null) {
+                    response.DevType = 2;
+                }
             }
 
             if (byteresponse == null) {

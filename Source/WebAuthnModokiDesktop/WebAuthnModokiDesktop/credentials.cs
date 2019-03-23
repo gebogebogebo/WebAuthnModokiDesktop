@@ -35,7 +35,7 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
         {
             this.isSuccess = false;
             if (string.IsNullOrEmpty(this.msg)) {
-                this.msg = ex.Message;
+                this.msg = ex.Message + " ";
                 if (this.commands.Count > 0) {
                     if (this.commands[this.commands.Count - 1].res != null) {
                         this.msg = this.msg + this.commands[this.commands.Count - 1].res.StatusMsg;

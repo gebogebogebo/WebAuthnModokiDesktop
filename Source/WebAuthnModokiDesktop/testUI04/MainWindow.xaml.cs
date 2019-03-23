@@ -32,10 +32,17 @@ namespace testUI04
             textLog.Text = textLog.Text + log + "\r\n";
         }
 
-        private string rpid = "CTAP2.gebo";
-        private string pin = "1234";
+        private string rpid = "azure";
+        private string pin = "";
         private async void buttonRegist_Click(object sender, RoutedEventArgs e)
         {
+            log($"Polling...");
+            var pol = await gebo.CTAP2.Util.CmdExecuter.Polling(5000);
+            if (pol == false) {
+                log($"Pollling timeout");
+                return;
+            }
+
             string ip = "";
             string user = "";
             string pass = "";

@@ -10,6 +10,33 @@ namespace gebo.CTAP2.Util
 {
     public class CmdExecuter
     {
+        public static async Task<bool> Polling(int timeoutms=10000)
+        {
+            var result = await Task<bool>.Run(async () => {
+                for(int counter = 0;counter<timeoutms ; ) {
+                    int waitms = 500;
+                    DevParam devParam = DevParam.GetDefaultParams();
+                    var st = await gebo.CTAP2.WebAuthnModokiDesktop.Credentials.Info(devParam);
+                    if (st.isSuccess) {
+                        string log = "";
+                        if (st.Dev == InfoCommandStatus.DevType.HID) {
+                            log = st.HidInfo;
+                        }else {
+                            log = st.NfcInfo;
+                        }
+                        Console.WriteLine(log);
+                        log = string.Format($"PIN Retry Count = {st.PinRetryCount}");
+                        Console.WriteLine(log);
+                        return true;
+                    }
+                    await Task.Delay(waitms);
+                    counter = counter + waitms;
+                }
+                return false;
+            });
+            return result;
+        }
+
         #region Register
         public static int CheckWriteBlockCount(string writeText)
         {
@@ -24,6 +51,7 @@ namespace gebo.CTAP2.Util
             byte[] data = System.Text.Encoding.ASCII.GetBytes(cmd);
             var recs = gebo.CTAP2.Util.CmdExecuter.CreateWriteDataList(data);
             foreach (var rec in recs) {
+                Console.WriteLine("Writing...");
                 result = await gebo.CTAP2.Util.CmdExecuter.WriteRec(rpid, pin, rec);
                 if( result != "Success") {
                     break;
@@ -191,11 +219,6 @@ namespace gebo.CTAP2.Util
         {
             ReadData result;
             try {
-                string uv = "preferred";
-                if (string.IsNullOrEmpty(pin) == false) {
-                    uv = "discouraged";
-                }
-
                 result = await Task<ReadData>.Run(async () => {
                     var readData = new ReadData();
 
@@ -209,7 +232,11 @@ namespace gebo.CTAP2.Util
                         publickey.rpId = rpid;
                         publickey.challenge = (byte[])challenge.Clone();
                         publickey.requireUserPresence = false;
-                        publickey.userVerification = UserVerificationRequirement.discouraged;
+                        if(string.IsNullOrEmpty(pin)) {
+                            publickey.userVerification = UserVerificationRequirement.required;
+                        } else {
+                            publickey.userVerification = UserVerificationRequirement.discouraged;
+                        }
                     }
 
                     var ret = await gebo.CTAP2.WebAuthnModokiDesktop.Credentials.Get(devParam, publickey);

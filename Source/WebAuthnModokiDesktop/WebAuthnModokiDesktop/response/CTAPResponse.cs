@@ -29,12 +29,16 @@ namespace gebo.CTAP2
         public string ResponseDataJson { get; set; }
         [DataMember()]
         public string CommandDataJson { get; set; }
+        [DataMember()]
+        // ==1;HID,==2;NFC
+        public int DevType { get; set; }
 
         public CTAPResponse()
         {
             Status = 0;
             CommandDataJson = "";
             ResponseDataJson = "";
+            DevType = 0;
         }
 
         public CTAPResponse(CTAPauthenticator.CTAPResponseInner resi)
@@ -51,6 +55,7 @@ namespace gebo.CTAP2
             }
             ResponseDataJson = resi.ResponseDataCbor.ToJSONString();
             System.Diagnostics.Debug.WriteLine(ResponseDataJson);        // log
+            this.DevType = resi.DevType;
         }
 
         protected bool getKeyValueAsBool(CBORObject obj, string key)

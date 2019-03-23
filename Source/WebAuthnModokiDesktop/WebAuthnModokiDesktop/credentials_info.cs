@@ -9,6 +9,13 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
 {
     public class InfoCommandStatus : CommandStatus
     {
+        public enum DevType
+        {
+            Unknown,
+            HID,
+            NFC,
+        }
+        public DevType Dev;
         public string HidInfo="";
         public string NfcInfo = "";
         public CTAPResponseInfo AuthenticatorInfo=null;
@@ -42,6 +49,13 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                         throw (new Exception("GetInfo"));
                     }
                     status.AuthenticatorInfo = ret;
+                    if( ret.DevType == 1) {
+                        status.Dev = InfoCommandStatus.DevType.HID;
+                    }else if( ret.DevType == 2) {
+                        status.Dev = InfoCommandStatus.DevType.NFC;
+                    }else{
+                        status.Dev = InfoCommandStatus.DevType.Unknown;
+                    }
                 }
 
                 // retry

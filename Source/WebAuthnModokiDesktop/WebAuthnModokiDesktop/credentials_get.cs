@@ -105,6 +105,12 @@ namespace gebo.CTAP2.WebAuthnModokiDesktop
                     }
                 }
 
+                // uv=trueでリクエストしてuvされていなければエラー
+                if (ctap.Option_uv) {
+                    if (ret.Flags_UserVerifiedResult == false) {
+                        throw (new Exception("UserVerifiedResult False"));
+                    }
+                }
                 status.isSuccess = true;
             } catch (Exception ex) {
                 status.setErrorMsg(ex);
