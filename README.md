@@ -4,7 +4,7 @@
 
 WebAuthnっぽいことをするC#ライブラリ
 C# Library that does things like WebAuthn
-- 2.0.0.0
+- 2.1.0.0
 
 ## Description
 - FIDO2 Authenticator CTAP2 HID , Yubikey , FEITIAN BioPass FIDO2
