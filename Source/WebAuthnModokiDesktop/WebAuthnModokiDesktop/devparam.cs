@@ -22,6 +22,9 @@ namespace gebo.CTAP2
 
                 // BioPass FIDO2
                 ret.hidparams.Add(new HidParam(0x096E));
+
+                // Solo Key
+                ret.hidparams.Add(new HidParam(0x0483));
             }
 
             // NFC

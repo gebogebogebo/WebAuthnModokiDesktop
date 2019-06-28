@@ -34,6 +34,7 @@ namespace gebo.CTAP2
 
         // CTAP Command
 		private const byte CTAPHID_INIT = 0x06;
+        private const byte CTAPHID_WINK = 0x08;
         private const byte CTAPHID_CBOR = 0x10;
         //This command code is used in response messages only.
         private const byte CTAPHID_ERROR = 0x3F;
@@ -78,6 +79,11 @@ namespace gebo.CTAP2
 			this.cid = response.Skip(8).Take(4).ToArray();
 
 		}
+
+        public async Task<byte[]> WinkAsync(byte[] command)
+        {
+            return await CallAsync(CTAPHID_WINK, command);
+        }
 
         public async Task<byte[]> CborAsync(byte[] command)
         {
