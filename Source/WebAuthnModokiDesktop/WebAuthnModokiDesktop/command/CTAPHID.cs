@@ -283,12 +283,12 @@ namespace gebo.CTAP2
             HidDevice device = null;
             foreach (var hidparam in hidparams) {
                 if (hidparam.ProductId == 0x00) {
-                    device = HidDevices.Enumerate(hidparam.VendorId).FirstOrDefault();
+                    device = HidDevices.Enumerate(hidparam.VendorId).OrderBy(x=>x.DevicePath).FirstOrDefault();
                     if (device != null) {
                         break;
                     }
                 } else {
-                    device = HidDevices.Enumerate(hidparam.VendorId, hidparam.ProductId).FirstOrDefault();
+                    device = HidDevices.Enumerate(hidparam.VendorId, hidparam.ProductId).OrderBy(x => x.DevicePath).FirstOrDefault();
                     if (device != null) {
                         break;
                     }
